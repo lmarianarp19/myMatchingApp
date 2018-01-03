@@ -1,27 +1,81 @@
+# ranking_women = {
+#     'angelica': {
+#         'alejandro': 1,
+#         'bernardo': 2,
+#         'camilo': 3,
+#         'diego': 4
+#     },
+#     'blanca': {
+#         'alejandro': 3,
+#         'bernardo': 1,
+#         'camilo': 2,
+#         'diego': 4
+#     },
+#     'clara': {
+#         'alejandro': 1,
+#         'bernardo': 2,
+#         'camilo': 3,
+#         'diego': 4
+#     },
+#     'diana': {
+#         'alejandro': 2,
+#         'bernardo': 1,
+#         'camilo': 4,
+#         'diego': 3
+#     }
+# }
+#
+# ranking_men = {
+#     'alejandro': {
+#         'angelica' : 1,
+#         'blanca' : 2,
+#         'clara' : 3,
+#         'diana' : 4
+#     },
+#     'bernardo' : {
+#         'angelica' : 1,
+#         'blanca' : 2,
+#         'clara' : 4,
+#         'diana' : 3
+#     },
+#     'camilo' : {
+#         'angelica' : 2,
+#         'blanca' : 4,
+#         'clara' : 1,
+#         'diana' : 3
+#     },
+#     'diego' : {
+#         'angelica' : 2,
+#         'blanca' : 1,
+#         'clara' : 3,
+#         'diana' : 4
+#     }
+# }
+
 ranking_women = {
     'angelica': {
-        'alejandro': 2,
-        'bernardo': 1,
-        'camilo': 3,
-        'diego': 4
+        'alejandro': 3,
+        'bernardo': 4,
+        'camilo': 2,
+        'diego': 1
     },
     'blanca': {
+        'alejandro': 3,
+        'bernardo': 1,
+        'camilo': 4,
+        'diego': 2
+    },
+    'clara': {
         'alejandro': 2,
         'bernardo': 3,
         'camilo': 4,
         'diego': 1
     },
-    'clara': {
-        'alejandro': 1,
-        'bernardo': 2,
-        'camilo': 3,
-        'diego': 4
-    },
     'diana': {
-        'alejandro': 2,
-        'bernardo': 1,
-        'camilo': 4,
-        'diego': 3
+        'alejandro': 3,
+        'bernardo': 2,
+        'camilo': 1,
+        'diego': 4
     }
 }
 
@@ -34,24 +88,23 @@ ranking_men = {
     },
     'bernardo' : {
         'angelica' : 1,
-        'blanca' : 2,
-        'clara' : 4,
-        'diana' : 3
-    },
-    'camilo' : {
-        'angelica' : 3,
         'blanca' : 4,
-        'clara' : 1,
+        'clara' : 3,
         'diana' : 2
     },
-    'diego' : {
+    'camilo' : {
         'angelica' : 2,
         'blanca' : 1,
         'clara' : 3,
         'diana' : 4
+    },
+    'diego' : {
+        'angelica' : 4,
+        'blanca' : 2,
+        'clara' : 3,
+        'diana' : 1
     }
 }
-
 
 
 
@@ -65,34 +118,55 @@ def all_men():
         free_men.append(man)
 
 def another_iteration_step():
-    while(len(free_men) > 0):
+    m = 0
+    while(len(free_men) > 0 and m < 15):
         for man in free_men:
+            m+=1
             begin_matching(man)
 
 def begin_matching(man):
+    print('this are the free men')
     print(free_men)
     print('dealing with %s'%(man))
-    n = 1
-    for name, value in ranking_men[man].items():
-        if(value == n ):
-            already_match = [ couple for couple in tentative_engagements if name in couple]
-            if(len(already_match) == 0 ):
-                tentative_engagements.append([man, name])
-                free_men.remove(man)
-                break
-            elif(len(already_match) > 0):
-                current_match = ranking_women[name][already_match[0][0]]
-                this_match = ranking_women[name][man]
 
-                if(current_match < this_match):
-                    print('she is satisifed with %s..'%(already_match[0][0]))
-                    n += 1
-                else:
-                    print('she prefers the man that we are evaluationg')
+    n = 1
+    # quiero regresar a la for loop si la persona no se le ha propuesto a nadie 
+    while !hasMatch
+        for name, value in ranking_men[man].items():
+            print('we are looking for the option %s'%(n))
+            if(value == n ):
+                # n = n + 1
+                already_match = [ couple for couple in tentative_engagements if name in couple]
+                print('this is already_match %s'%(already_match))
+                if(len(already_match) == 0 ):
+                    print('the option num %s'%(n-1))
+                    print('is avaliable for %s'%(man))
+                    tentative_engagements.append([man, name])
                     free_men.remove(man)
-                    free_men.append(already_match[0][0])
-                    already_match[0][0] = man
-                    break
+                    print(tentative_engagements)
+                    # I want to break the full for loop.
+                    return
+                elif(len(already_match) > 0):
+                        current_match = ranking_women[name][already_match[0][0]]
+                        this_match = ranking_women[name][man]
+                        if(current_match < this_match):
+                            print('she is satisifed with %s..'%(already_match[0][0]))
+                            n = n + 1
+
+                        else:
+                            print('she prefers the man that we are evaluationg')
+                            free_men.remove(man)
+                            free_men.append(already_match[0][0])
+                            print('here we change the tentative match')
+                            print('tentative_engagements before %s'%(tentative_engagements))
+                            already_match[0][0] = man
+                            print('tentative_engagements after the change %s'%(tentative_engagements))
+
+                            break
+                else:
+                    print("in the else clause")
+
+
 
 def main():
     all_men()
