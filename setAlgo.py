@@ -54,28 +54,28 @@
 
 ranking_women = {
     'angelica': {
-        'alejandro': 3,
-        'bernardo': 4,
-        'camilo': 2,
-        'diego': 1
+        'alejandro': 1,
+        'bernardo': 2,
+        'camilo': 3,
+        'diego': 4
     },
     'blanca': {
         'alejandro': 3,
         'bernardo': 1,
-        'camilo': 4,
-        'diego': 2
+        'camilo': 2,
+        'diego': 4
     },
     'clara': {
-        'alejandro': 2,
-        'bernardo': 3,
-        'camilo': 4,
+        'alejandro': 4,
+        'bernardo': 2,
+        'camilo': 3,
         'diego': 1
     },
     'diana': {
         'alejandro': 3,
-        'bernardo': 2,
+        'bernardo': 4,
         'camilo': 1,
-        'diego': 4
+        'diego': 2
     }
 }
 
@@ -88,21 +88,21 @@ ranking_men = {
     },
     'bernardo' : {
         'angelica' : 1,
-        'blanca' : 4,
-        'clara' : 3,
-        'diana' : 2
+        'blanca' : 2,
+        'clara' : 4,
+        'diana' : 3
     },
     'camilo' : {
-        'angelica' : 2,
-        'blanca' : 1,
-        'clara' : 3,
-        'diana' : 4
+        'angelica' : 1,
+        'blanca' : 2,
+        'clara' : 4,
+        'diana' : 3
     },
     'diego' : {
         'angelica' : 4,
-        'blanca' : 2,
-        'clara' : 3,
-        'diana' : 1
+        'blanca' : 1,
+        'clara' : 2,
+        'diana' : 3
     }
 }
 
@@ -130,8 +130,10 @@ def begin_matching(man):
     print('dealing with %s'%(man))
 
     n = 1
-    # quiero regresar a la for loop si la persona no se le ha propuesto a nadie 
-    while !hasMatch
+    single = True
+
+    # quiero regresar a la for loop si la persona no se le ha propuesto a nadie
+    while single:
         for name, value in ranking_men[man].items():
             print('we are looking for the option %s'%(n))
             if(value == n ):
@@ -145,14 +147,15 @@ def begin_matching(man):
                     free_men.remove(man)
                     print(tentative_engagements)
                     # I want to break the full for loop.
-                    return
+                    single = False
+                    break
                 elif(len(already_match) > 0):
                         current_match = ranking_women[name][already_match[0][0]]
                         this_match = ranking_women[name][man]
                         if(current_match < this_match):
                             print('she is satisifed with %s..'%(already_match[0][0]))
                             n = n + 1
-
+                            break
                         else:
                             print('she prefers the man that we are evaluationg')
                             free_men.remove(man)
@@ -161,10 +164,9 @@ def begin_matching(man):
                             print('tentative_engagements before %s'%(tentative_engagements))
                             already_match[0][0] = man
                             print('tentative_engagements after the change %s'%(tentative_engagements))
-
+                            single = False
                             break
-                else:
-                    print("in the else clause")
+
 
 
 
