@@ -52,7 +52,7 @@
 #     }
 # }
 
-ranking_women = {
+women_ranking = {
     'angelica': {
         'alejandro': 1,
         'bernardo': 2,
@@ -79,7 +79,7 @@ ranking_women = {
     }
 }
 
-ranking_men = {
+men_ranking = {
     'alejandro': {
         'angelica' : 1,
         'blanca' : 2,
@@ -108,71 +108,93 @@ ranking_men = {
 
 
 
-
 tentative_engagements = []
 
-free_men = []
+free_proposer = []
+proposer_ranking = {}
+recipient_ranking = {}
+proposer = 'men'
+def set_proposer_recipient(proposer):
+    global proposer_ranking
+    global recipient_ranking
+    # set who is the proposer and who is the recipient
+    if (proposer == 'men'):
+        proposer_ranking = men_ranking
+        recipient_ranking = women_ranking
+    elif(proposer == 'women'):
+        recipient_ranking = women_ranking
+        proposer_ranking = men_ranking
+    return proposer_ranking, recipient_ranking
 
-def all_men():
-    for man in ranking_men:
-        free_men.append(man)
+
+def all_proposer():
+    # get the list of proposer's names
+    print('inside all proposer')
+    print('proposer_ranking %s'%(proposer_ranking))
+    for person in proposer_ranking:
+        free_proposer.append(person)
+
 
 def another_iteration_step():
-    m = 0
-    while(len(free_men) > 0 and m < 15):
-        for man in free_men:
-            m+=1
-            begin_matching(man)
+    print('indide another_iteration_step')
+    #run the algorithm until there is no single proposer.
+    while(len(free_proposer) > 0):
+        for person in free_proposer:
+            begin_matching(person)
 
-def begin_matching(man):
-    print('this are the free men')
-    print(free_men)
-    print('dealing with %s'%(man))
+def begin_matching(actual_proposer):
+    print('dealing with %s'%(actual_proposer))
 
-    n = 1
+    option = 1
     single = True
 
     # quiero regresar a la for loop si la persona no se le ha propuesto a nadie
     while single:
-        for name, value in ranking_men[man].items():
-            print('we are looking for the option %s'%(n))
-            if(value == n ):
+        # continue iteraiting until the person is match
+        for recipient, rank in proposer_ranking[actual_proposer].items():
+            print('we are looking for the option %s'%(option))
+            if(rank == option ):
                 # n = n + 1
-                already_match = [ couple for couple in tentative_engagements if name in couple]
+                already_match = [ couple for couple in tentative_engagements if recipient in couple]
                 print('this is already_match %s'%(already_match))
                 if(len(already_match) == 0 ):
-                    print('the option num %s'%(n-1))
-                    print('is avaliable for %s'%(man))
-                    tentative_engagements.append([man, name])
-                    free_men.remove(man)
-                    print(tentative_engagements)
+                    print('the option num %s'%(option-1))
+                    print('is avaliable for %s'%(actual_proposer))
+                    tentative_engagements.append([actual_proposer, recipient])
+                    free_proposer.remove(actual_proposer)
                     # I want to break the full for loop.
                     single = False
+                    print (tentative_engagements)
                     break
                 elif(len(already_match) > 0):
-                        current_match = ranking_women[name][already_match[0][0]]
-                        this_match = ranking_women[name][man]
+                        current_match = recipient_ranking[recipient][already_match[0][0]]
+                        this_match = recipient_ranking[recipient][actual_proposer]
                         if(current_match < this_match):
                             print('she is satisifed with %s..'%(already_match[0][0]))
-                            n = n + 1
+                            option = option + 1
+                            print (tentative_engagements)
                             break
                         else:
                             print('she prefers the man that we are evaluationg')
-                            free_men.remove(man)
-                            free_men.append(already_match[0][0])
+                            free_proposer.remove(actual_proposer)
+                            free_proposer.append(already_match[0][0])
                             print('here we change the tentative match')
                             print('tentative_engagements before %s'%(tentative_engagements))
-                            already_match[0][0] = man
+                            already_match[0][0] = actual_proposer
                             print('tentative_engagements after the change %s'%(tentative_engagements))
                             single = False
+                            print (tentative_engagements)
                             break
 
 
 
 
 def main():
-    all_men()
+    # proposer = 'men '
+    set_proposer_recipient(proposer)
+    all_proposer()
     another_iteration_step()
     print (tentative_engagements)
+
 
 main()
