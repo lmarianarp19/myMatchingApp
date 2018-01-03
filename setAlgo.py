@@ -36,12 +36,12 @@ ranking_men = {
         'angelica' : 1,
         'blanca' : 2,
         'clara' : 4,
-        'diana' : 4
+        'diana' : 3
     },
     'camilo' : {
         'angelica' : 3,
         'blanca' : 4,
-        'clara' : 2,
+        'clara' : 1,
         'diana' : 2
     },
     'diego' : {
@@ -70,6 +70,7 @@ def another_iteration_step():
             begin_matching(man)
 
 def begin_matching(man):
+    print(free_men)
     print('dealing with %s'%(man))
     n = 1
     for name, value in ranking_men[man].items():
@@ -79,12 +80,12 @@ def begin_matching(man):
                 tentative_engagements.append([man, name])
                 free_men.remove(man)
                 break
-            else:
-                current_match = ranking_women[women][already_match[0][0]]
-                this_match = ranking_women[women][men]
+            elif(len(already_match) > 0):
+                current_match = ranking_women[name][already_match[0][0]]
+                this_match = ranking_women[name][man]
 
                 if(current_match < this_match):
-                    print('she is satisifed with %s..'%(taken_match[0][0]))
+                    print('she is satisifed with %s..'%(already_match[0][0]))
                     n += 1
                 else:
                     print('she prefers the man that we are evaluationg')
