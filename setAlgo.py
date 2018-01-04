@@ -1,4 +1,4 @@
-# ranking_women = {
+# women_ranking = {
 #     'angelica': {
 #         'alejandro': 1,
 #         'bernardo': 2,
@@ -25,7 +25,7 @@
 #     }
 # }
 #
-# ranking_men = {
+# men_ranking = {
 #     'alejandro': {
 #         'angelica' : 1,
 #         'blanca' : 2,
@@ -54,55 +54,55 @@
 
 women_ranking = {
     'angelica': {
-        'alejandro': 1,
-        'bernardo': 2,
-        'camilo': 3,
-        'diego': 4
-    },
-    'blanca': {
         'alejandro': 3,
-        'bernardo': 1,
-        'camilo': 2,
-        'diego': 4
-    },
-    'clara': {
-        'alejandro': 4,
         'bernardo': 2,
-        'camilo': 3,
+        'camilo': 4,
         'diego': 1
     },
-    'diana': {
+    'blanca': {
         'alejandro': 3,
         'bernardo': 4,
         'camilo': 1,
         'diego': 2
+    },
+    'clara': {
+        'alejandro': 4,
+        'bernardo': 2,
+        'camilo': 1,
+        'diego': 3
+    },
+    'diana': {
+        'alejandro': 1,
+        'bernardo': 2,
+        'camilo': 3,
+        'diego': 4
     }
 }
 
 men_ranking = {
     'alejandro': {
-        'angelica' : 1,
-        'blanca' : 2,
-        'clara' : 3,
-        'diana' : 4
-    },
-    'bernardo' : {
-        'angelica' : 1,
+        'angelica' : 3,
         'blanca' : 2,
         'clara' : 4,
+        'diana' : 1
+    },
+    'bernardo' : {
+        'angelica' : 4,
+        'blanca' : 2,
+        'clara' : 1,
         'diana' : 3
     },
     'camilo' : {
-        'angelica' : 1,
+        'angelica' : 4,
         'blanca' : 2,
-        'clara' : 4,
-        'diana' : 3
+        'clara' : 3,
+        'diana' : 1
     },
     'diego' : {
         'angelica' : 4,
-        'blanca' : 1,
+        'blanca' : 3,
         'clara' : 2,
-        'diana' : 3
+        'diana' : 1
     }
 }
 
@@ -113,7 +113,7 @@ tentative_engagements = []
 free_proposer = []
 proposer_ranking = {}
 recipient_ranking = {}
-proposer = 'men'
+proposer = 'women'
 def set_proposer_recipient(proposer):
     global proposer_ranking
     global recipient_ranking
@@ -122,8 +122,8 @@ def set_proposer_recipient(proposer):
         proposer_ranking = men_ranking
         recipient_ranking = women_ranking
     elif(proposer == 'women'):
-        recipient_ranking = women_ranking
-        proposer_ranking = men_ranking
+        proposer_ranking = women_ranking
+        recipient_ranking = men_ranking
     return proposer_ranking, recipient_ranking
 
 
