@@ -1,8 +1,5 @@
 from django.db import models
 
-class Community(models.Model):
-    name: models.CharField(max_length=20)
-    number_couples: models.IntegerField()
 
 class Woman(models.Model):
     name =  models.CharField(max_length=50)
@@ -26,3 +23,13 @@ class Pairing(models.Model):
 class Matching(models.Model):
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
     algorithm = models.CharField(max_length=20)
+
+class Community(models.Model):
+    name = models.CharField(max_length=20)
+    number_couples = models.IntegerField()
+
+    def __str__(self):
+        """
+        String for representing the MyModelName object (in Admin site etc.)
+        """
+        return self.name
