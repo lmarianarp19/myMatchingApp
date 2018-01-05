@@ -1,0 +1,8 @@
+<h1> Hello </h1>
+
+    {% for community in communities %}
+    <div>
+        <p>Community Name: {{ community.name }}</p>
+        <p>Number of Couples: {{community.number_couples}}</p>
+    </div>
+{% endfor %}
