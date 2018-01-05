@@ -1,6 +1,7 @@
 from django.db import models
 
 class Community(models.Model):
+    name: models.CharField(max_length=20)
     number_couples: models.IntegerField()
 
 class Woman(models.Model):
