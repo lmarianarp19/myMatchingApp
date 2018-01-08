@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/match.css' %}">
   </head>
 
-<h1> Hello </h1>
+<a href="{% url 'new_community' %}" ><span>New Community :)</span></a>
 
     {% for community in communities %}
     <div>
@@ -14,5 +14,14 @@
         <p>Number of Couples: {{community.number_couples}}</p>
     </div>
 {% endfor %}
+
+<div class="content container">
+     <div class="row">
+         <div class="col-md-8">
+             {% block content %}
+             {% endblock %}
+         </div>
+     </div>
+ </div>
 
 </html>
