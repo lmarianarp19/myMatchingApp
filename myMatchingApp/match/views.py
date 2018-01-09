@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Community
-from .forms import CommunityForm, WomanForm, ManForm
+from .forms import CommunityForm, RedForm, BlueForm
 from django.shortcuts import redirect
 
 
@@ -28,28 +28,28 @@ def new_community(request):
         form = CommunityForm()
     return render(request, 'match/new_community.html', {'form': form})
 
-def new_woman(request):
+def new_red(request):
     if request.method == "POST":
-        form = WomanForm(request.POST)
+        form = RedForm(request.POST)
         if form.is_valid():
             community = form.save(commit=False)
             community.save()
             return redirect('home')
     else:
-        form = WomanForm()
-    return render(request, 'match/new_woman.html', {'form': form})
+        form = RedForm()
+    return render(request, 'match/new_red.html', {'form': form})
 
 # def new_man(request, id):
-def new_man(request):
+def new_blue(request):
     if request.method == "POST":
-        form = ManForm(request.POST)
+        form = BlueForm(request.POST)
         if form.is_valid():
             community = form.save(commit=False)
             community.save()
             return redirect('home')
     else:
-        form = ManForm()
-    return render(request, 'match/new_man.html', {'form': form})
+        form = BlueForm()
+    return render(request, 'match/new_blue.html', {'form': form})
 
 
 # def index(request):

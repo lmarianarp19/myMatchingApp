@@ -1,20 +1,7 @@
 from django.db import models
 
 
-class Woman(models.Model):
-
-    # blue = 'blue',
-    # red = 'red'
-    #
-    # colors = (
-    #     (blue, 'Blue'),
-    #     (red, 'Red'),
-    # )
-    # color = models.CharField(
-    #     max_length=4,
-    #     choices=colors
-    #     default=blue,
-    # )
+class Red(models.Model):
 
     name =  models.CharField(max_length=50)
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
@@ -31,7 +18,7 @@ class Woman(models.Model):
 
 
 
-class Man(models.Model):
+class Blue(models.Model):
     name = models.CharField(max_length=50)
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
     pairing = models.ForeignKey('Pairing', on_delete=models.CASCADE, null=True)
@@ -47,10 +34,10 @@ class Man(models.Model):
         return self.name
 
 class Ranking(models.Model):
-    woman_score = models.IntegerField()
-    man_score = models.IntegerField()
-    woman = models.ForeignKey('Woman', on_delete=models.CASCADE)
-    man = models.ForeignKey('Man', on_delete=models.CASCADE)
+    red_score = models.IntegerField()
+    blue_score = models.IntegerField()
+    red = models.ForeignKey('Red', on_delete=models.CASCADE)
+    blue = models.ForeignKey('Blue', on_delete=models.CASCADE)
 
 class Pairing(models.Model):
     matching = models.ForeignKey('Matching', on_delete=models.CASCADE)

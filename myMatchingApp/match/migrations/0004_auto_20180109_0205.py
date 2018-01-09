@@ -5,6 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
+    
+
     dependencies = [
         ('match', '0003_auto_20180108_2319'),
     ]
