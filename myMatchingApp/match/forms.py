@@ -10,6 +10,7 @@ class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
         fields = ('name', 'number_couples')
+        # unique_together = ('name', 'community')
 
 class WomanForm(forms.ModelForm):
 
