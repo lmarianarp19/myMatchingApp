@@ -1,7 +1,7 @@
 {% extends 'match/community_list.html' %}
 
 {% block content %}
-    <h1>New Community</h1>
+    <h1>Register Man in a Community</h1>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Add people</button>

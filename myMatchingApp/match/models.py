@@ -2,14 +2,40 @@ from django.db import models
 
 
 class Woman(models.Model):
+
+    # blue = 'blue',
+    # red = 'red'
+    #
+    # colors = (
+    #     (blue, 'Blue'),
+    #     (red, 'Red'),
+    # )
+    # color = models.CharField(
+    #     max_length=4,
+    #     choices=colors
+    #     default=blue,
+    # )
+
     name =  models.CharField(max_length=50)
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
-    pairing = models.ForeignKey('Pairing', on_delete=models.CASCADE)
+    pairing = models.ForeignKey('Pairing', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        """
+        String for representing the MyModelName object (in Admin site etc.)
+        """
+        return self.name
 
 class Man(models.Model):
     name = models.CharField(max_length=50)
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
-    pairing = models.ForeignKey('Pairing', on_delete=models.CASCADE)
+    pairing = models.ForeignKey('Pairing', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        """
+        String for representing the MyModelName object (in Admin site etc.)
+        """
+        return self.name
 
 class Ranking(models.Model):
     woman_score = models.IntegerField()
