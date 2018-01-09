@@ -1,11 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Community
-from .forms import CommunityForm, WomanForm
+from .forms import CommunityForm, WomanForm, ManForm
 from django.shortcuts import redirect
 
 
 # Create your views here.
+
+def home(request):
+    # communities = Community.objects.all()
+    return render(request, 'match/base.html', {})
+
 def community_list(request):
     communities = Community.objects.all()
     return render(request, 'match/community_list.html', {'communities': communities})
@@ -16,30 +21,32 @@ def new_community(request):
         if form.is_valid():
             community = form.save(commit=False)
             community.save()
-            return redirect('new_woman', id=community.id)
+            # return redirect('new_woman', id=community.id)
+            return redirect('home')
             # return redirect('community_list')
     else:
         form = CommunityForm()
     return render(request, 'match/new_community.html', {'form': form})
 
-def new_woman(request, id):
+def new_woman(request):
     if request.method == "POST":
         form = WomanForm(request.POST)
         if form.is_valid():
             community = form.save(commit=False)
             community.save()
-            return redirect('community_list')
+            return redirect('home')
     else:
         form = WomanForm()
     return render(request, 'match/new_woman.html', {'form': form})
 
-def new_man(request, id):
+# def new_man(request, id):
+def new_man(request):
     if request.method == "POST":
         form = ManForm(request.POST)
         if form.is_valid():
             community = form.save(commit=False)
             community.save()
-            return redirect('community_list')
+            return redirect('home')
     else:
         form = ManForm()
     return render(request, 'match/new_man.html', {'form': form})

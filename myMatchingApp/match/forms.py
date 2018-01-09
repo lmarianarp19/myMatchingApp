@@ -2,7 +2,7 @@ from django import forms
 
 from .models import Community, Man, Woman
 
-from django.forms import inlineformset_factory
+# from django.forms import inlineformset_factory
 
 
 class CommunityForm(forms.ModelForm):
