@@ -1,11 +1,23 @@
 {% extends 'match/base.html' %}
 
 {% block content %}
-    <h1>Community List</h1>
+<h1>Community List</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Number of Couples</th>
+    </tr>
+  </thead>
+  <tbody>
     {% for community in communities %}
-    <div>
-        <p>Community Name: {{ community.name }}</p>
-        <p>Number of Couples: {{community.number_couples}}</p>
-    </div>
-{% endfor %}
+    <tr>
+      <td>{{ community.name }}</td>
+      <td>{{community.number_couples}}</td>
+      <td><a href="{% url 'community_update' community.pk%}" ><span> Edit </span></a></td>
+      <td><a href="{% url 'community_delete' community.pk%}" ><span> Delete </span></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
