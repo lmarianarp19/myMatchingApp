@@ -11,5 +11,6 @@ urlpatterns = [
     path('community/create/', views.CommunityCreate.as_view(), name='community_create'),
     path('community/<int:pk>/update/', views.CommunityUpdate.as_view(), name='community_update'),
     path('commit/<int:pk>/delete/', views.CommunityDelete.as_view(), name='community_delete'),
+    path('commit/<int:pk>/', views.community_details, name='community_details'),
 
 ]

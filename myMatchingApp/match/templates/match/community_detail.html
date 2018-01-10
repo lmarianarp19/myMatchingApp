@@ -1,0 +1,43 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+  <h1> {{community.name }}</h1>
+  <!-- <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Red Member</th>
+        <th scope="col">Blue Member</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for red in reds %}
+      <tr>
+                <td>{{red}} </td>
+      </tr>
+      {% endfor %}
+      {% for blue in blues %}
+      <tr>
+        <td>{{blue}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table> -->
+
+
+<h2> Reds </h2>
+<ul>
+{% for red in reds %}
+  <li>{{red}}</li>
+  {% endfor %}
+</ul>
+
+
+
+<h2> Blues </h2>
+  <ul>
+  {% for blue in blues %}
+  <li>{{blue}}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

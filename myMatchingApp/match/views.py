@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Community
+from .models import Community, Red, Blue
 from .forms import CommunityForm, RedForm, BlueForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.core.exceptions import ValidationError
 
 
 # Create your views here.
@@ -41,31 +42,102 @@ def new_red(request):
         form = RedForm()
     return render(request, 'match/new_red.html', {'form': form})
 
-# def new_man(request, id):
 def new_blue(request):
     if request.method == "POST":
         form = BlueForm(request.POST)
+
+        # blues = Blue.objects.filter(community = community)
+        # print(blues)
         if form.is_valid():
-            community = form.save(commit=False)
-            community.save()
+            community = form.cleaned_data['community']
+            blues = Blue.objects.filter(community = community)
+            # print('este es el numero de blues')
+            # print(blues.count() )
+            # print(isinstance(blues.count, int))
+
+            if blues.count() >= community.number_couples:
+                raise ValidationError('There is no more space for blue in this community')
+
+            blue = form.save(commit=False)
+            blue.save()
             return redirect('home')
     else:
         form = BlueForm()
     return render(request, 'match/new_blue.html', {'form': form})
 
+# def new_man(request, id):
+# def new_blue(request):
+#     if request.method == "POST":
+#         form = BlueForm(request.POST)
+#         print('this is the reques')
+#         print(request)
+#         # community = Community.objects.filter(community = form.community)
+#         # community = form.community
+#         #reds = Red.objects.filter(community = community)
+#         # blues = Blue.objects.filter(community = community)
+#         # if len(blues) >= community.number_couples:
+#             # raise ValidationError('There is no space for more blue members in this community')
+#
+#         if form.is_valid():
+#             community = form.save(commit=False)
+#             community.save()
+#             return redirect('home')
+#     else:
+#         form = BlueForm()
+#     return render(request, 'match/new_blue.html', {'form': form})
+
 class CommunityCreate(CreateView):
     model = Community
     fields = '__all__'
+    success_url = reverse_lazy('community_list')
     # initial={'date_of_death':'05/01/2018',}
 
 class CommunityUpdate(UpdateView):
     model = Community
     fields = ['name']
+    success_url = reverse_lazy('community_list')
 
 class CommunityDelete(DeleteView):
     model = Community
     success_url = reverse_lazy('community_list')
 
+def community_details(request, pk):
+    community = get_object_or_404(Community, pk=pk)
+    reds = Red.objects.filter(community = community)
+    blues = Blue.objects.filter(community = community)
+    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues})
 
+
+
+
+# def new_blue(request):
+#     blue=get_object_or_404(Blue)
+#
+#     # If this is a POST request then process the Form data
+#     if request.method == 'POST':
+#
+#         # Create a form instance and populate it with data from the request (binding):
+#         form = BlueForm(request.POST)
+#
+#         # Check if the form is valid:
+#         if form.is_valid():
+#             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+#             # book_inst.due_back = form.cleaned_data['renewal_date']
+#             # blue = form.save(commit=False)
+#             # blue.save()
+#             blue.name = form.cleaned_data['name']
+#             blue.community = form.cleaned_data['community']
+#             blue.save()
+#
+#             # redirect to a new URL:
+#             # return HttpResponseRedirect(reverse('community_list') )
+#             return redirect('home')
+#
+#     # If this is a GET (or any other method) create the default form.
+#     else:
+#     #     proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+#         form = BlueForm()
+#
+#     return render(request, 'match/new_blue.html', {'form': form})
 # def index(request):
 #     return HttpResponse("Hello, world. You're at the polls index.")
