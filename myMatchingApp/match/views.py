@@ -35,8 +35,13 @@ def new_red(request):
     if request.method == "POST":
         form = RedForm(request.POST)
         if form.is_valid():
-            community = form.save(commit=False)
-            community.save()
+            community = form.cleaned_data['community']
+            reds = Red.objects.filter(community = community)
+            if reds.count() >= community.number_couples:
+                raise ValidationError('There is no more space for red in this community')
+
+            red = form.save(commit=False)
+            red.save()
             return redirect('home')
     else:
         form = RedForm()
@@ -107,6 +112,17 @@ def community_details(request, pk):
     blues = Blue.objects.filter(community = community)
     return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues})
 
+def blue_details(request, pk):
+    blue = get_object_or_404(Blue, pk=pk)
+    community = blue.community
+    reds = Red.objects.filter(community = community)
+    return render(request, 'match/blue_details.html', {'community': community, 'blue': blue, 'reds': reds})
+
+def red_details(request, pk):
+    red = get_object_or_404(Red, pk=pk)
+    community = red.community
+    blues = Red.objects.filter(community = community)
+    return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red})
 
 
 

@@ -28,7 +28,7 @@
 <h2> Reds </h2>
 <ul>
 {% for red in reds %}
-  <li>{{red}}</li>
+  <li><a href="{% url 'red_details' red.pk%}" ><span> {{red.name}} </span></a></li>
   {% endfor %}
 </ul>
 
@@ -37,7 +37,7 @@
 <h2> Blues </h2>
   <ul>
   {% for blue in blues %}
-  <li>{{blue}}</li>
+  <li><a href="{% url 'blue_details' blue.pk%}" ><span> {{blue.name}} </span></a></li>
   {% endfor %}
 </ul>
 {% endblock %}
