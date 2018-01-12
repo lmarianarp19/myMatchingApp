@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Community, Red, Blue, Ranking
-from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm
+from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -122,48 +122,60 @@ def red_details(request, pk):
     red = get_object_or_404(Red, pk=pk)
     community = red.community
     # TODO sera qut tengo que cmabiar esto? es blues con red
-    blues = Red.objects.filter(community = community)
-    return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red})
+    blues = Blue.objects.filter(community = community)
+    return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red, 'red_id': pk})
 
 def new_ranking_blue(request, red_id, blue_id):
+    # the id are strings, I need to pass it to integers
     blue_id = int(blue_id)
     red_id = int(red_id)
+    #get the blu and red objects with that id
     blue = Blue.objects.get(pk = blue_id)
-
     red = Red.objects.get(pk = red_id)
-    # check if i have the ranking with this red and blue
-    #  if not create the new one
-    # TODO ver como hacer este filter
+    #check if this ranking already exist
     ranking = Ranking.objects.filter(blue = blue, red = red)
 
-    # community = form.cleaned_data['community']
-    # reds = Red.objects.filter(community = community)
-    print("this is the ranking")
-    print(ranking)
     if request.method == "POST":
+        # if the ranking exists
         if ranking:
-            # print('this is ranking pk')
-            # print(ranking.pk)
-            # # ranking_instance = Ranking.objects.get(pk=ranking.pk)
-            # ranking = form.ranking
+            # edit the actual ranking instance.
             form =  RankingBlueForm(request.POST, instance = ranking.first())
         else:
-        # print('outside the if')
+            # if ranking doesn't exist create a new instance of ranking.
             form = RankingBlueForm(request.POST)
         if form.is_valid():
             ranking = form.save(commit=False)
-            # print("this is blue id")
-            # print(blue_id)
-
-
+            # add blue and red to the ranking model
             ranking.blue = blue
             ranking.red = red
-
             ranking.save()
             return redirect('home')
     else:
         form = RankingBlueForm()
     return render(request, 'match/new_ranking_blue.html', {'form': form})
+
+def new_ranking_red(request, blue_id, red_id):
+    # TODO ver si puedo limpiar esto, haciendo solo una funcion para azul y rojo
+    blue_id = int(blue_id)
+    red_id = int(red_id)
+    blue = Blue.objects.get(pk = blue_id)
+    red = Red.objects.get(pk = red_id)
+    ranking = Ranking.objects.filter(red = red, blue = blue)
+    if request.method == "POST":
+        if ranking:
+            # the red and blue form are different because in the red form I want to rank blue and viceversa
+            form =  RankingRedForm(request.POST, instance = ranking.first())
+        else:
+            form = RankingRedForm(request.POST)
+        if form.is_valid():
+            ranking = form.save(commit=False)
+            ranking.blue = blue
+            ranking.red = red
+            ranking.save()
+            return redirect('home')
+    else:
+        form = RankingRedForm()
+    return render(request, 'match/new_ranking_red.html', {'form': form})
 
 def ranking_list(request):
     rankings = Ranking.objects.all()

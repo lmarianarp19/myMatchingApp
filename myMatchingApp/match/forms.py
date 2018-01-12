@@ -35,6 +35,13 @@ class RankingBlueForm(forms.ModelForm):
     class Meta:
         model = Ranking
         fields = ('blue_to_red_score',)
+
+class RankingRedForm(forms.ModelForm):
+    class Meta:
+        model = Ranking
+        fields = ('red_to_blue_score',)
+
+
     # blue_to_red_score = forms.IntegerField()
     # blue = forms.IntegerField(widget=forms.HiddenInput())
     # red = forms.IntegerField(widget=forms.HiddenInput())

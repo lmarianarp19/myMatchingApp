@@ -15,6 +15,7 @@ urlpatterns = [
     path('community/<int:pk>/', views.community_details, name='community_details'),
     path('blue/<int:pk>/', views.blue_details, name='blue_details'),
     path('red/<int:pk>/', views.red_details, name='red_details'),
-    path('new_ranking/<int:blue_id>/<int:red_id>/', views.new_ranking_blue, name='new_ranking_blue'),
+    path('new_ranking_blue/<int:blue_id>/<int:red_id>/', views.new_ranking_blue, name='new_ranking_blue'),
+    path('new_ranking_red/<int:red_id>/<int:blue_id>/', views.new_ranking_red, name='new_ranking_red'),
     path('ranking_list/', views.ranking_list, name='ranking_list'),
 ]
