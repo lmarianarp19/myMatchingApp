@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Community, Red, Blue
-from .forms import CommunityForm, RedForm, BlueForm
+from .models import Community, Red, Blue, Ranking
+from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -56,10 +56,6 @@ def new_blue(request):
         if form.is_valid():
             community = form.cleaned_data['community']
             blues = Blue.objects.filter(community = community)
-            # print('este es el numero de blues')
-            # print(blues.count() )
-            # print(isinstance(blues.count, int))
-
             if blues.count() >= community.number_couples:
                 raise ValidationError('There is no more space for blue in this community')
 
@@ -116,13 +112,77 @@ def blue_details(request, pk):
     blue = get_object_or_404(Blue, pk=pk)
     community = blue.community
     reds = Red.objects.filter(community = community)
-    return render(request, 'match/blue_details.html', {'community': community, 'blue': blue, 'reds': reds})
+    return render(request, 'match/blue_details.html', {'community': community, 'blue': blue, 'reds': reds, 'blue_id': pk})
 
 def red_details(request, pk):
     red = get_object_or_404(Red, pk=pk)
     community = red.community
+    # TODO sera qut tengo que cmabiar esto? es blues con red
     blues = Red.objects.filter(community = community)
     return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red})
+
+def new_ranking_blue(request, red_id, blue_id):
+    blue_id = int(blue_id)
+    red_id = int(red_id)
+    # check if i have the ranking with this red and blue
+    #  if not create the new one
+    # TODO ver como hacer este filter
+    # ranking = Ranking.objects.filter(blue_id  = blue_id, red_id = red_id)
+    # print("this is the ranking")
+    # print(ranking)
+    if request.method == "POST":
+        # if ranking:
+        #     form: RankingBlueForm(request.POST, instance = ranking)
+        # else:
+        print('outside the if')
+        form = RankingBlueForm(request.POST)
+        if form.is_valid():
+            ranking = form.save(commit=False)
+            print("this is blue id")
+            print(blue_id)
+
+            blue = Blue.objects.get(pk = blue_id)
+
+            red = Red.objects.get(pk = red_id)
+            ranking.blue = blue
+            ranking.red = red
+
+            ranking.save()
+            return redirect('home')
+    else:
+        form = RankingBlueForm()
+    return render(request, 'match/new_ranking_blue.html', {'form': form})
+
+def ranking_list(request):
+    communities = Community.objects.all()
+    return render(request, 'match/community_list.html', {'communities': communities})
+        # community = Community.objects.filter(community = form.community)
+        # community = form.community
+        #reds = Red.objects.filter(community = community)
+        # blues = Blue.objects.filter(community = community)
+        # if len(blues) >= community.number_couples:
+            # raise ValidationError('There is no space for more blue members in this community')
+
+    #     if form.is_valid():
+    #         ranking = form.save(commit=False)
+    #         ranking.save()
+    #         return redirect('home')
+    # else:
+    #     form = RankingForm()
+    # return render(request, 'match/new_ranking.html', {'form': form})
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

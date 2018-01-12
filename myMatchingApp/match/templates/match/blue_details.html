@@ -6,7 +6,7 @@
   <ul>
     <p> This are the red elements in {{community}}</p>
     {% for red in reds %}
-    <li>{{red}}</li>
+    <li><a href="{% url 'new_ranking_blue' blue_id red.pk%}" ><span> {{red}} </span></a></li>
     {% endfor %}
   </ul>
   {% endblock %}

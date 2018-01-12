@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Community, Blue, Red
+from .models import Community, Blue, Red, Ranking
 
 from django.core.exceptions import ValidationError
 
@@ -30,6 +30,15 @@ class BlueForm(forms.ModelForm):
         fields = ('name', 'community')
         # exclude = ('Pairing',)
 
+
+class RankingBlueForm(forms.ModelForm):
+    class Meta:
+        model = Ranking
+        fields = ['blue_to_red_score']
+    # blue_to_red_score = forms.IntegerField()
+    # blue = forms.IntegerField(widget=forms.HiddenInput())
+    # red = forms.IntegerField(widget=forms.HiddenInput())
+    # TODO tal vez poner el clean
 # class BlueForm(forms.Form):
 #
 #     # class Meta:

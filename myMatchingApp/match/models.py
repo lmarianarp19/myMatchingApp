@@ -34,10 +34,10 @@ class Blue(models.Model):
         return self.name
 
 class Ranking(models.Model):
-    red_score = models.IntegerField()
-    blue_score = models.IntegerField()
+    red_to_blue_score = models.IntegerField(null=True)
+    blue_to_red_score = models.IntegerField(null=True)
     red = models.ForeignKey('Red', on_delete=models.CASCADE)
-    blue = models.ForeignKey('Blue', on_delete=models.CASCADE)
+    blue = models.ForeignKey('Blue', on_delete=models.CASCADE )
 
 class Pairing(models.Model):
     matching = models.ForeignKey('Matching', on_delete=models.CASCADE)
