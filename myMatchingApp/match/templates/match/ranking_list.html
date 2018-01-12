@@ -1,0 +1,25 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+<h1>Ranking List</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Blue Name</th>
+      <th scope="col">Red Name</th>
+      <th scope="col">Blue to Red ranking</th>
+      <th scope="col">Red to blue ranking</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ranking in rankings %}
+    <tr>
+      <td>{{ ranking.blue }}</td>
+      <td>{{ ranking.red }}</td>
+      <td>{{ ranking.blue_to_red_score }}</td>
+      <td>{{ ranking.red_to_blue_score }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

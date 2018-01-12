@@ -66,6 +66,10 @@ def new_blue(request):
         form = BlueForm()
     return render(request, 'match/new_blue.html', {'form': form})
 
+def ranking_list(request):
+    rankings = Ranking.objects.all()
+    return render(request, 'match/ranking_list.html', {'rankings': rankings})
+
 # def new_man(request, id):
 # def new_blue(request):
 #     if request.method == "POST":
@@ -124,26 +128,34 @@ def red_details(request, pk):
 def new_ranking_blue(request, red_id, blue_id):
     blue_id = int(blue_id)
     red_id = int(red_id)
+    blue = Blue.objects.get(pk = blue_id)
+
+    red = Red.objects.get(pk = red_id)
     # check if i have the ranking with this red and blue
     #  if not create the new one
     # TODO ver como hacer este filter
-    # ranking = Ranking.objects.filter(blue_id  = blue_id, red_id = red_id)
-    # print("this is the ranking")
-    # print(ranking)
+    ranking = Ranking.objects.filter(blue = blue, red = red)
+
+    # community = form.cleaned_data['community']
+    # reds = Red.objects.filter(community = community)
+    print("this is the ranking")
+    print(ranking)
     if request.method == "POST":
-        # if ranking:
-        #     form: RankingBlueForm(request.POST, instance = ranking)
-        # else:
-        print('outside the if')
-        form = RankingBlueForm(request.POST)
+        if ranking:
+            # print('this is ranking pk')
+            # print(ranking.pk)
+            # # ranking_instance = Ranking.objects.get(pk=ranking.pk)
+            # ranking = form.ranking
+            form =  RankingBlueForm(request.POST, instance = ranking.first())
+        else:
+        # print('outside the if')
+            form = RankingBlueForm(request.POST)
         if form.is_valid():
             ranking = form.save(commit=False)
-            print("this is blue id")
-            print(blue_id)
+            # print("this is blue id")
+            # print(blue_id)
 
-            blue = Blue.objects.get(pk = blue_id)
 
-            red = Red.objects.get(pk = red_id)
             ranking.blue = blue
             ranking.red = red
 
@@ -154,8 +166,8 @@ def new_ranking_blue(request, red_id, blue_id):
     return render(request, 'match/new_ranking_blue.html', {'form': form})
 
 def ranking_list(request):
-    communities = Community.objects.all()
-    return render(request, 'match/community_list.html', {'communities': communities})
+    rankings = Ranking.objects.all()
+    return render(request, 'match/ranking_list.html', {'rankings': rankings})
         # community = Community.objects.filter(community = form.community)
         # community = form.community
         #reds = Red.objects.filter(community = community)
