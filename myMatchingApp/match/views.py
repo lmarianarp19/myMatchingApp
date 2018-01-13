@@ -182,6 +182,21 @@ def ranking_list(request):
     return render(request, 'match/ranking_list.html', {'rankings': rankings})
 
 
+def new_matching(request):
+    if request.method == "POST":
+        form = MatchingForm(request.POST)
+        if form.is_valid():
+            community = form.cleaned_data['community']
+            # reds = Red.objects.filter(community = community)
+            # if reds.count() >= community.number_couples:
+            #     raise ValidationError('There is no more space for red in this community')
+            #
+            # red = form.save(commit=False)
+            # red.save()
+            # return redirect('home')
+    else:
+        form = MatchingForm()
+    return render(request, 'match/new_matching.html', {'form': form})
 
 # class MatchingCreate(CreateView):
 #     model = Matching
