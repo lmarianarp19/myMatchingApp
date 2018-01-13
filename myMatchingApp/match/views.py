@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Community, Red, Blue, Ranking
-from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm
+from .models import Community, Red, Blue, Ranking, Matching
+from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm, MatchingForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -180,6 +180,23 @@ def new_ranking_red(request, blue_id, red_id):
 def ranking_list(request):
     rankings = Ranking.objects.all()
     return render(request, 'match/ranking_list.html', {'rankings': rankings})
+
+
+
+# class MatchingCreate(CreateView):
+#     model = Matching
+#     fields = '__all__'
+#     success_url = reverse_lazy('home')
+#     # initial={'date_of_death':'05/01/2018',}
+#
+# class MatchingUpdate(UpdateView):
+#     model = Matching
+#     fields = '__all__'
+#     success_url = reverse_lazy('home')
+#
+# class MatchingDelete(DeleteView):
+#     model = Matching
+#     success_url = reverse_lazy('home')
         # community = Community.objects.filter(community = form.community)
         # community = form.community
         #reds = Red.objects.filter(community = community)

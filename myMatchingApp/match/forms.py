@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Community, Blue, Red, Ranking
+from .models import Community, Blue, Red, Ranking, Matching
 
 from django.core.exceptions import ValidationError
 
@@ -40,6 +40,11 @@ class RankingRedForm(forms.ModelForm):
     class Meta:
         model = Ranking
         fields = ('red_to_blue_score',)
+
+class MatchingForm(forms.ModelForm):
+    class Meta:
+        model = Matching
+        fields = '__all__'
 
 
     # blue_to_red_score = forms.IntegerField()

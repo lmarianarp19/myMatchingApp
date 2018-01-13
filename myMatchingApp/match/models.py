@@ -44,7 +44,18 @@ class Pairing(models.Model):
 
 class Matching(models.Model):
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
-    algorithm = models.CharField(max_length=20)
+    SG_BLUE_PROPOSE = 'SGBP'
+    SG_RED_PROPOSE = 'SGRP'
+    ALGORITHM_CHOICES = (
+        (SG_BLUE_PROPOSE, 'Shapley Gale Blue Propose'),
+        (SG_RED_PROPOSE, 'Shapley Gale Red Propose'),
+    )
+    algorithm = models.CharField(max_length=10,
+    choices=ALGORITHM_CHOICES,
+    default=SG_BLUE_PROPOSE
+    )
+# TODO poner un status ready para ver si todas las personas ya pusieron el ranking
+
 
 class Community(models.Model):
     name = models.CharField(max_length=20, unique = True)
