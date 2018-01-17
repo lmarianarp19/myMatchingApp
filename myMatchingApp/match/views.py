@@ -184,16 +184,23 @@ def ranking_list(request):
 
 
 class New_matching(View):
-    tentative_engagements = []
-    free_proposer = []
-    proposer_ranking = {}
-    recipient_ranking = {}
+    # tentative_engagements = []
+    # free_proposer = []
+    # proposer_ranking = {}
+    # recipient_ranking = {}
     form_class = MatchingForm
     # Que hace este initial??
     initial = {'key': 'value'}
     template = 'match/new_matching.html'
     # en el ejemplo en linea tienen un campo con un hash y la template en esta parte
-
+    # print('this is tentative_engagements at the beginning')
+    # print(tentative_engagements)
+    # 
+    def __init__(self):
+        self.tentative_engagements = []
+        self.free_proposer = []
+        self.proposer_ranking = {}
+        self.recipient_ranking = {}
 
     def get(self, request):
         # Por que necesito el get???
@@ -241,13 +248,15 @@ class New_matching(View):
             elif(algorithm == 'SGRP'):
                 self.proposer_ranking = ranks_red_to_blue
                 self.recipient_ranking = ranks_blue_to_red
-                proposer_instance = blues
-                recipient_instance = red
+                proposer_instance = reds
+                recipient_instance = blues
             self.all_proposer(proposer_instance)
             print('this is all proposer')
             print(self.all_proposer)
             # self.free_proposer =all_proposer(self, proposer_instance)
             self.another_iteration_step()
+            print('this is the final match')
+            print(self.tentative_engagements)
             return redirect('home')
 
         # else:
@@ -299,6 +308,10 @@ class New_matching(View):
                         print (self.tentative_engagements)
                         break
                     elif(len(already_match) > 0):
+                        print('this is already_match')
+                        print(already_match)
+                        print('this is recipient_ranking')
+                        print(self.recipient_ranking)
                         # get the score that the recipikent gives for the current_match
                         current_match = self.recipient_ranking[recipient][already_match[0][0]]
                         # get the score that the recipient gives to the actual_proposer
@@ -322,7 +335,7 @@ class New_matching(View):
                             already_match[0][0] = actual_proposer
                             print('tentative_engagements after the change %s'%(self.tentative_engagements))
                             single = False
-                            print (self.tentative_engagements)
+                            # print (self.tentative_engagements)
                             break
 
 
