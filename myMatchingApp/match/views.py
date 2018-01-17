@@ -189,7 +189,16 @@ class New_matching(View):
     proposer_ranking = {}
     recipient_ranking = {}
     form_class = MatchingForm
+    # Que hace este initial??
+    initial = {'key': 'value'}
+    template = 'match/new_matching.html'
     # en el ejemplo en linea tienen un campo con un hash y la template en esta parte
+
+
+    def get(self, request):
+        # Por que necesito el get???
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template, {'form': form})
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -234,23 +243,26 @@ class New_matching(View):
                 self.recipient_ranking = ranks_blue_to_red
                 proposer_instance = blues
                 recipient_instance = red
-
-            self.free_proposer = all_proposer(proposer_instance)
+            self.all_proposer(proposer_instance)
+            print('this is all proposer')
+            print(self.all_proposer)
+            # self.free_proposer =all_proposer(self, proposer_instance)
             self.another_iteration_step()
             return redirect('home')
 
-        else:
-            form = MatchingForm()
-        return render(request, 'match/new_matching.html', {'form': form})
+        # else:
+        #     form = MatchingForm()
+        return render(request, self.template, {'form': form})
 
-    def all_proposer(proposer):
+    def all_proposer(self, proposer):
+        # este metodo lo puedo poner afuera, como en las ultima lineas o lo puedo poner dentro de la clase, que es mejor?
         # get the proposer names
         for person in proposer:
             self.free_proposer.append(person.name)
 
-        return self.free_proposer
+        # return self.free_proposer
 
-    def another_iteration_step():
+    def another_iteration_step(self):
         # maybe I will have problems with tantative_engagements
         print('indide another_iteration_step')
         #run the algorithm until there is no single proposer.
@@ -258,7 +270,7 @@ class New_matching(View):
             for person in self.free_proposer:
                 self.begin_matching(person)
 
-    def begin_matching(actual_proposer):
+    def begin_matching(self, actual_proposer):
         print('dealing with %s'%(actual_proposer))
 
         option = 1
@@ -269,12 +281,16 @@ class New_matching(View):
             # continue iteraiting until the person is match
             for recipient, rank in self.proposer_ranking[actual_proposer].items():
                 print('we are looking for the option %s'%(option))
+                # if the element at the dictionary is the option that I'm looking for, i start looking for the first option
+                # if the fist option is no available for me i go to the second option ...
                 if(int(rank) == option ):
                     # n = n + 1
+                    # array of arrays with the engagement for this option.
+                    # EX: [['carlos', 'ana']]
                     already_match = [ couple for couple in self.tentative_engagements if recipient in couple]
                     print('this is already_match %s'%(already_match))
                     if(len(already_match) == 0 ):
-                        print('the option num %s'%(option-1))
+                        print('the option num %s'%(option))
                         print('is avaliable for %s'%(actual_proposer))
                         self.tentative_engagements.append([actual_proposer, recipient])
                         self.free_proposer.remove(actual_proposer)
@@ -283,24 +299,31 @@ class New_matching(View):
                         print (self.tentative_engagements)
                         break
                     elif(len(already_match) > 0):
-                            current_match = self.recipient_ranking[recipient][already_match[0][0]]
-                            this_match = self.recipient_ranking[recipient][actual_proposer]
-                            if(current_match < this_match):
-                                print('she is satisifed with %s..'%(already_match[0][0]))
-                                option = option + 1
-                                print (self.tentative_engagements)
-                                break
-                            else:
-                                print('she prefers the man that we are evaluationg')
-                                self.free_proposer.remove(actual_proposer)
-                                self.free_proposer.append(already_match[0][0])
-                                print('here we change the tentative match')
-                                print('tentative_engagements before %s'%(tentative_engagements))
-                                already_match[0][0] = actual_proposer
-                                print('tentative_engagements after the change %s'%(tentative_engagements))
-                                single = False
-                                print (self.tentative_engagements)
-                                break
+                        # get the score that the recipikent gives for the current_match
+                        current_match = self.recipient_ranking[recipient][already_match[0][0]]
+                        # get the score that the recipient gives to the actual_proposer
+                        this_match = self.recipient_ranking[recipient][actual_proposer]
+                        #  if she prefers the current_match the actual proposer goes with the next option.
+                        if(current_match < this_match):
+                            print('she is satisifed with %s..'%(already_match[0][0]))
+                            option = option + 1
+                            print (self.tentative_engagements)
+                            break
+                        else:
+                        # if she prefers the actual proposer they get engaged
+                            print('she prefers the man that we are evaluationg')
+                            # remove the last engagement
+                            self.free_proposer.remove(actual_proposer)
+                            # the guy becomes single now
+                            self.free_proposer.append(already_match[0][0])
+                            print('here we change the tentative match')
+                            print('tentative_engagements before %s'%(self.tentative_engagements))
+                            # she gets engaged with the actual_proposer
+                            already_match[0][0] = actual_proposer
+                            print('tentative_engagements after the change %s'%(self.tentative_engagements))
+                            single = False
+                            print (self.tentative_engagements)
+                            break
 
 
 
@@ -526,3 +549,11 @@ class New_matching(View):
 #     return render(request, 'match/new_blue.html', {'form': form})
 # def index(request):
 #     return HttpResponse("Hello, world. You're at the polls index.")
+
+# def all_proposer(proposer):
+#
+#     # get the proposer names
+#     free_proposer = []
+#     for person in proposer:
+#         free_proposer.append(person.name)
+#     return free_proposer
