@@ -1,0 +1,9 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+    <h1>Create a new match </h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Create match!</button>
+    </form>
+{% endblock %}

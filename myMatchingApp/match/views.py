@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Community, Red, Blue, Ranking, Matching
+from .models import Community, Red, Blue, Ranking, Matching, Pairing
 from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm, MatchingForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
+from django.views import View
 
 
 # Create your views here.
@@ -182,6 +183,369 @@ def ranking_list(request):
     return render(request, 'match/ranking_list.html', {'rankings': rankings})
 
 
+class New_matching(View):
+    # tentative_engagements = []
+    # free_proposer = []
+    # proposer_ranking = {}
+    # recipient_ranking = {}
+    form_class = MatchingForm
+    # Que hace este initial??
+    initial = {'key': 'value'}
+    template = 'match/new_matching.html'
+    # en el ejemplo en linea tienen un campo con un hash y la template en esta parte
+    # print('this is tentative_engagements at the beginning')
+    # print(tentative_engagements)
+    #
+    def __init__(self):
+        self.tentative_engagements = []
+        self.free_proposer = []
+        self.proposer_ranking = {}
+        self.recipient_ranking = {}
+
+    def get(self, request):
+        # Por que necesito el get???
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            community = form.cleaned_data['community']
+            algorithm = form.cleaned_data['algorithm']
+            # encontrar los azules y rojos
+            blues = Blue.objects.filter(community = community)
+            reds = Red.objects.filter(community = community)
+            # hash to store all the rankings from blue to red
+            ranks_blue_to_red = {}
+            ranks_red_to_blue = {}
+            for blue in blues:
+                # hash to store the ranking to the red make by this blue
+                blue_to_red = {}
+                # get all the rankings that have this blue
+                blue_ranking  = Ranking.objects.filter(blue = blue)
+                for rank in blue_ranking:
+                    # store the ranking froms this blue to each red
+                    # intentando poner .name
+                    blue_to_red[rank.red.name] = rank.blue_to_red_score
+                ranks_blue_to_red[blue.name] = blue_to_red
+
+            for red in reds:
+                # hash to store the ranking to the red make by this blue
+                red_to_blue = {}
+                # get all the rankings that have this blue
+                red_ranking  = Ranking.objects.filter(red = red)
+                for rank in red_ranking:
+                    # store the ranking froms this blue to each red
+                    red_to_blue[rank.blue.name] = rank.red_to_blue_score
+                ranks_red_to_blue[rank.red.name] = red_to_blue
+
+            # set who is the proposer and who is the recipent
+            if (algorithm == 'SGBP'):
+                self.proposer_ranking = ranks_blue_to_red
+                self.recipient_ranking = ranks_red_to_blue
+                proposer_instance = blues
+                recipent_instance = reds
+                proposer = Blue
+                recipient = Red
+            elif(algorithm == 'SGRP'):
+                self.proposer_ranking = ranks_red_to_blue
+                self.recipient_ranking = ranks_blue_to_red
+                proposer_instance = reds
+                recipient_instance = blues
+                proposer = Red
+                recipient = Blue
+            self.all_proposer(proposer_instance)
+            print('this is all proposer')
+            print(self.all_proposer)
+            # self.free_proposer =all_proposer(self, proposer_instance)
+            self.another_iteration_step()
+            print('this is the final match')
+            print(self.tentative_engagements)
+            matching = form.save(commit = False)
+            matching.save()
+            for subarray in self.tentative_engagements:
+                self.make_pair(proposer, recipient, subarray, community, matching)
+            # pairing_new = Pairing(matching = matching)
+            # pairing_new.save()
+
+
+            return redirect('home')
+
+        # else:
+        #     form = MatchingForm()
+        return render(request, self.template, {'form': form})
+
+    def make_pair(self, proposer, recipient, subarray, community, matching):
+        get_proposer = proposer.objects.filter(name = subarray[0], community = community)[0]
+        get_recipient = recipient.objects.filter(name = subarray[1], community = community)[0]
+        pairing_new = Pairing(matching = matching)
+        pairing_new.save()
+        get_proposer.pairing = pairing_new
+        get_recipient.pairing = pairing_new
+        get_proposer.save()
+        get_recipient.save()
+
+
+
+
+    def all_proposer(self, proposer):
+        # este metodo lo puedo poner afuera, como en las ultima lineas o lo puedo poner dentro de la clase, que es mejor?
+        # get the proposer names
+        for person in proposer:
+            self.free_proposer.append(person.name)
+
+        # return self.free_proposer
+
+    def another_iteration_step(self):
+        # maybe I will have problems with tantative_engagements
+        print('indide another_iteration_step')
+        #run the algorithm until there is no single proposer.
+        while(len(self.free_proposer) > 0):
+            for person in self.free_proposer:
+                self.begin_matching(person)
+
+    def begin_matching(self, actual_proposer):
+        print('dealing with %s'%(actual_proposer))
+
+        option = 1
+        single = True
+
+        # quiero regresar a la for loop si la persona no se le ha propuesto a nadie
+        while single:
+            # continue iteraiting until the person is match
+            for recipient, rank in self.proposer_ranking[actual_proposer].items():
+                print('we are looking for the option %s'%(option))
+                # if the element at the dictionary is the option that I'm looking for, i start looking for the first option
+                # if the fist option is no available for me i go to the second option ...
+                if(int(rank) == option ):
+                    # n = n + 1
+                    # array of arrays with the engagement for this option.
+                    # EX: [['carlos', 'ana']]
+                    already_match = [ couple for couple in self.tentative_engagements if recipient in couple]
+                    print('this is already_match %s'%(already_match))
+                    if(len(already_match) == 0 ):
+                        print('the option num %s'%(option))
+                        print('is avaliable for %s'%(actual_proposer))
+                        self.tentative_engagements.append([actual_proposer, recipient])
+                        self.free_proposer.remove(actual_proposer)
+                        # I want to break the full for loop.
+                        single = False
+                        print (self.tentative_engagements)
+                        break
+                    elif(len(already_match) > 0):
+                        print('this is already_match')
+                        print(already_match)
+                        print('this is recipient_ranking')
+                        print(self.recipient_ranking)
+                        # get the score that the recipikent gives for the current_match
+                        current_match = self.recipient_ranking[recipient][already_match[0][0]]
+                        # get the score that the recipient gives to the actual_proposer
+                        this_match = self.recipient_ranking[recipient][actual_proposer]
+                        #  if she prefers the current_match the actual proposer goes with the next option.
+                        if(current_match < this_match):
+                            print('she is satisifed with %s..'%(already_match[0][0]))
+                            option = option + 1
+                            print (self.tentative_engagements)
+                            break
+                        else:
+                        # if she prefers the actual proposer they get engaged
+                            print('she prefers the man that we are evaluationg')
+                            # remove the last engagement
+                            self.free_proposer.remove(actual_proposer)
+                            # the guy becomes single now
+                            self.free_proposer.append(already_match[0][0])
+                            print('here we change the tentative match')
+                            print('tentative_engagements before %s'%(self.tentative_engagements))
+                            # she gets engaged with the actual_proposer
+                            already_match[0][0] = actual_proposer
+                            print('tentative_engagements after the change %s'%(self.tentative_engagements))
+                            single = False
+                            # print (self.tentative_engagements)
+                            break
+def matching_list(request):
+    matching = Matching.objects.all()
+    return render(request, 'match/matching_list.html', {'matching': matching})
+
+
+def pairing_list(request):
+    pairing = Pairing.objects.all()
+    print('this are the pairing')
+    print(pairing)
+    return render(request, 'match/pairing_list.html', {'pairing': pairing})
+
+def matching_details(request, pk):
+    matching = get_object_or_404(Matching, pk=pk)
+    # community = matching.community
+    # algorithm = matching.algorithm
+    pairs = Pairing.objects.filter(matching = matching)
+    pairs_array = []
+    for pair in pairs:
+        couple = []
+        # red = Red.objects.filter(pairing = pair)[0].name
+        # blue = Blue.objects.filter(pairing = pair)[0].name
+        red = Red.objects.filter(pairing = pair)[0]
+        blue = Blue.objects.filter(pairing = pair)[0]
+        # talvez tengo que quitar el [0],name de red y blue y ponerlo cuando append a couple
+        ranking = Ranking.objects.filter(red = red, blue = blue)
+        blue_happiness = ranking[0].blue_to_red_score
+        red_happiness = ranking[0].red_to_blue_score
+        couple.append(blue.name)
+        couple.append(red.name)
+        couple.append(blue_happiness)
+        couple.append(red_happiness)
+        pairs_array.append(couple)
+    return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array })
+
+
+
+
+
+
+#
+# def new_matching(request):
+#     if request.method == "POST":
+#         form = MatchingForm(request.POST)
+#         if form.is_valid():
+#             community = form.cleaned_data['community']
+#             algorithm = form.cleaned_data['algorithm']
+#             # encontrar los azules y rojos
+#             blues = Blue.objects.filter(community = community)
+#             reds = Red.objects.filter(community = community)
+#             # hash to store all the rankings from blue to red
+#             ranks_blue_to_red = {}
+#             ranks_red_to_blue = {}
+#             for blue in blues:
+#                 # hash to store the ranking to the red make by this blue
+#                 blue_to_red = {}
+#                 # get all the rankings that have this blue
+#                 blue_ranking  = Ranking.objects.filter(blue = blue)
+#                 for rank in blue_ranking:
+#                     # store the ranking froms this blue to each red
+#                     # intentando poner .name
+#                     blue_to_red[rank.red.name] = rank.blue_to_red_score
+#                 ranks_blue_to_red[blue.name] = blue_to_red
+#
+#             for red in reds:
+#                 # hash to store the ranking to the red make by this blue
+#                 red_to_blue = {}
+#                 # get all the rankings that have this blue
+#                 red_ranking  = Ranking.objects.filter(red = red)
+#                 for rank in red_ranking:
+#                     # store the ranking froms this blue to each red
+#                     red_to_blue[rank.blue.name] = rank.red_to_blue_score
+#                 ranks_red_to_blue[rank.red.name] = red_to_blue
+#
+#             # set who is the proposer and who is the recipent
+#             if (algorithm == 'SGBP'):
+#                 proposer_ranking = ranks_blue_to_red
+#                 recipient_ranking = ranks_red_to_blue
+#                 proposer_instance = blues
+#                 recipent_instance = reds
+#             elif(algorithm == 'SGRP'):
+#                 proposer_ranking = ranks_red_to_blue
+#                 recipient_ranking = ranks_blue_to_red
+#                 proposer_instance = blues
+#                 recipient_instance = red
+#             free_proposer = all_proposer(proposer_instance)
+#             # print('this are the proposer names')
+#             # print(free_proposer)
+#             tentative_engagements = []
+#             another_iteration_step(free_proposer, proposer_ranking, tentative_engagements)
+#             return redirect('home')
+#
+#     else:
+#         form = MatchingForm()
+#     return render(request, 'match/new_matching.html', {'form': form})
+
+
+
+# def all_proposer(proposer):
+#     # get the proposer names
+#     proposer_names = []
+#     for person in proposer:
+#         proposer_names.append(person.name)
+#
+#     return proposer_names
+
+# def another_iteration_step(proposer_names, proposer_ranking, tentative_engagements):
+#     # maybe I will have problems with tantative_engagements
+#     print('indide another_iteration_step')
+#     #run the algorithm until there is no single proposer.
+#     while(len(proposer_names) > 0):
+#         for person in proposer_names:
+#             begin_matching(person, proposer_ranking, tentative_engagements, proposer_names)
+
+# def begin_matching(actual_proposer, proposer_ranking, tentative_engagements, proposer_names):
+#     print('dealing with %s'%(actual_proposer))
+#
+#     option = 1
+#     single = True
+#
+#     # quiero regresar a la for loop si la persona no se le ha propuesto a nadie
+#     while single:
+#         # continue iteraiting until the person is match
+#         for recipient, rank in proposer_ranking[actual_proposer].items():
+#             print('we are looking for the option %s'%(option))
+#             if(int(rank) == option ):
+#                 # n = n + 1
+#                 already_match = [ couple for couple in tentative_engagements if recipient in couple]
+#                 print('this is already_match %s'%(already_match))
+#                 if(len(already_match) == 0 ):
+#                     print('the option num %s'%(option-1))
+#                     print('is avaliable for %s'%(actual_proposer))
+#                     tentative_engagements.append([actual_proposer, recipient])
+#                     proposer_names.remove(actual_proposer)
+#                     # I want to break the full for loop.
+#                     single = False
+#                     print (tentative_engagements)
+#                     break
+#                 elif(len(already_match) > 0):
+#                         current_match = recipient_ranking[recipient][already_match[0][0]]
+#                         this_match = recipient_ranking[recipient][actual_proposer]
+#                         if(current_match < this_match):
+#                             print('she is satisifed with %s..'%(already_match[0][0]))
+#                             option = option + 1
+#                             print (tentative_engagements)
+#                             break
+#                         else:
+#                             print('she prefers the man that we are evaluationg')
+#                             free_proposer.remove(actual_proposer)
+#                             free_proposer.append(already_match[0][0])
+#                             print('here we change the tentative match')
+#                             print('tentative_engagements before %s'%(tentative_engagements))
+#                             already_match[0][0] = actual_proposer
+#                             print('tentative_engagements after the change %s'%(tentative_engagements))
+#                             single = False
+#                             print (tentative_engagements)
+#                             break
+#     return tentative_engagements, proposer_names
+
+
+
+            # print ('this are the rankings '
+
+            # reds = Red.objects.filter(community = community)
+            # if reds.count() >= community.number_couples:
+            #     raise ValidationError('There is no more space for red in this community')
+            #
+            # red = form.save(commit=False)
+            # red.save()
+            # return redirect('home')
+
+# funcion que mira asigna quien es el que propone.
+# def set_proposer_recipient(proposer):
+#     # global proposer_ranking
+#     # global recipient_ranking
+#     # set who is the proposer and who is the recipient
+#     if (proposer == 'SGBP'):
+#         proposer_ranking = men_ranking
+#         recipient_ranking = women_ranking
+#     elif(proposer == 'SGRP'):
+#         proposer_ranking = women_ranking
+#         recipient_ranking = men_ranking
+#     return proposer_ranking, recipient_ranking
+
+
 
 # class MatchingCreate(CreateView):
 #     model = Matching
@@ -258,3 +622,11 @@ def ranking_list(request):
 #     return render(request, 'match/new_blue.html', {'form': form})
 # def index(request):
 #     return HttpResponse("Hello, world. You're at the polls index.")
+
+# def all_proposer(proposer):
+#
+#     # get the proposer names
+#     free_proposer = []
+#     for person in proposer:
+#         free_proposer.append(person.name)
+#     return free_proposer

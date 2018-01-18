@@ -1,0 +1,27 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+<h1> Matching Details </h1>
+<h3> Community: </h1> {{matching.community }}
+  <h3> Algorithm: </h3> {{matching.algorithm}}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Blue</th>
+        <th scope="col">Red</th>
+        <th scope="col">Blue Hapiness</th>
+        <th scope="col">Red Hapiness</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for couple in pairs_array %}
+      <tr>
+        {% for couple in couple %}
+        <td>{{couple}}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% endblock %}

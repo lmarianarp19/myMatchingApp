@@ -38,9 +38,19 @@ class Ranking(models.Model):
     blue_to_red_score = models.IntegerField(null=True)
     red = models.ForeignKey('Red', on_delete=models.CASCADE)
     blue = models.ForeignKey('Blue', on_delete=models.CASCADE )
+    # def __str__(self):
+    #     """
+    #     String for representing the MyModelName object (in Admin site etc.)
+    #     """
+    #     return self.name
 
 class Pairing(models.Model):
     matching = models.ForeignKey('Matching', on_delete=models.CASCADE)
+    # def __str__(self):
+    #     """
+    #     String for representing the MyModelName object (in Admin site etc.)
+    #     """
+    #     return self.matching.community
 
 class Matching(models.Model):
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
@@ -54,6 +64,11 @@ class Matching(models.Model):
     choices=ALGORITHM_CHOICES,
     default=SG_BLUE_PROPOSE
     )
+    def __str__(self):
+        """
+        String for representing the MyModelName object (in Admin site etc.)
+        """
+        return self.name
 # TODO poner un status ready para ver si todas las personas ya pusieron el ranking
 
 

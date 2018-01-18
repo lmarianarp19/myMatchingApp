@@ -2,8 +2,11 @@
 
 {% block content %}
 <h1> Red Name:{{red.name }}</h1>
-<h2> Community: {{community.name}}</h2>
-  <ul>
+<h2> Community:</h2> {{community.name}}
+<h2> Pairing:</h2>
+<ul>
+  <li> {{red.pairing}} </li>
+</ul>
     <p> This are the blue elements in {{community}}</p>
     {% for blue in blues %}
     <li><a href="{% url 'new_ranking_red' red_id blue.pk%}" ><span> {{blue}} </span></a></li>

@@ -1,0 +1,19 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+<h1>Pairing List</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">matching</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for pair in pairing %}
+    <tr>
+      <td>{{ pair }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
