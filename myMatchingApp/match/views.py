@@ -245,11 +245,15 @@ class New_matching(View):
                 self.recipient_ranking = ranks_red_to_blue
                 proposer_instance = blues
                 recipent_instance = reds
+                proposer = Blue
+                recipient = Red
             elif(algorithm == 'SGRP'):
                 self.proposer_ranking = ranks_red_to_blue
                 self.recipient_ranking = ranks_blue_to_red
                 proposer_instance = reds
                 recipient_instance = blues
+                proposer = Red
+                recipient = Blue
             self.all_proposer(proposer_instance)
             print('this is all proposer')
             print(self.all_proposer)
@@ -259,8 +263,10 @@ class New_matching(View):
             print(self.tentative_engagements)
             matching = form.save(commit = False)
             matching.save()
-            pairing_new = Pairing(matching = matching)
-            pairing_new.save()
+            for subarray in self.tentative_engagements:
+                self.make_pair(proposer, recipient, subarray, community, matching)
+            # pairing_new = Pairing(matching = matching)
+            # pairing_new.save()
 
 
             return redirect('home')
@@ -268,6 +274,14 @@ class New_matching(View):
         # else:
         #     form = MatchingForm()
         return render(request, self.template, {'form': form})
+
+    def make_pair(self, proposer, recipient, subarray, community, matching):
+        get_proposer = proposer.objects.filter(name = subarray[0], community = community)
+        get_recipient = recipient.objects.filter(name = subarray[1], community = community)
+        pairing_new = Pairing(matching = matching)
+        pairing_new.save()
+
+
 
     def all_proposer(self, proposer):
         # este metodo lo puedo poner afuera, como en las ultima lineas o lo puedo poner dentro de la clase, que es mejor?
@@ -350,6 +364,8 @@ def matching_list(request):
 
 def pairing_list(request):
     pairing = Pairing.objects.all()
+    print('this are the pairing')
+    print(pairing)
     return render(request, 'match/pairing_list.html', {'pairing': pairing})
 
 #

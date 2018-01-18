@@ -46,12 +46,12 @@ class Ranking(models.Model):
 
 class Pairing(models.Model):
     matching = models.ForeignKey('Matching', on_delete=models.CASCADE)
-    def __str__(self):
-        """
-        String for representing the MyModelName object (in Admin site etc.)
-        """
-        return self.name
-        
+    # def __str__(self):
+    #     """
+    #     String for representing the MyModelName object (in Admin site etc.)
+    #     """
+    #     return self.matching.community
+
 class Matching(models.Model):
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
     SG_BLUE_PROPOSE = 'SGBP'
