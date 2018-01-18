@@ -381,14 +381,19 @@ def matching_details(request, pk):
     pairs_array = []
     for pair in pairs:
         couple = []
-        red = Red.objects.filter(pairing = pair)[0].name
-        blue = Blue.objects.filter(pairing = pair)[0].name
-        # couple.append(blue.name)
-        # couple.append(red.name)
-        couple.append(blue)
-        couple.append(red)
+        # red = Red.objects.filter(pairing = pair)[0].name
+        # blue = Blue.objects.filter(pairing = pair)[0].name
+        red = Red.objects.filter(pairing = pair)[0]
+        blue = Blue.objects.filter(pairing = pair)[0]
+        # talvez tengo que quitar el [0],name de red y blue y ponerlo cuando append a couple
+        ranking = Ranking.objects.filter(red = red, blue = blue)
+        blue_happiness = ranking[0].blue_to_red_score
+        red_happiness = ranking[0].red_to_blue_score
+        couple.append(blue.name)
+        couple.append(red.name)
+        couple.append(blue_happiness)
+        couple.append(red_happiness)
         pairs_array.append(couple)
-        print(pairs_array)
     return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array })
 
 
