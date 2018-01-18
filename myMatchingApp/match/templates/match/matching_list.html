@@ -1,0 +1,21 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+<h1>Matching List</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Algorithm</th>
+      <th scope="col">Community</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for match in matching %}
+    <tr>
+      <td>{{ match.algorithm }}</td>
+      <td>{{match.community}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

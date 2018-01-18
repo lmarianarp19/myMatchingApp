@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Community, Red, Blue, Ranking, Matching
+from .models import Community, Red, Blue, Ranking, Matching, Pairing
 from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm, MatchingForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -195,7 +195,7 @@ class New_matching(View):
     # en el ejemplo en linea tienen un campo con un hash y la template en esta parte
     # print('this is tentative_engagements at the beginning')
     # print(tentative_engagements)
-    # 
+    #
     def __init__(self):
         self.tentative_engagements = []
         self.free_proposer = []
@@ -257,6 +257,12 @@ class New_matching(View):
             self.another_iteration_step()
             print('this is the final match')
             print(self.tentative_engagements)
+            matching = form.save(commit = False)
+            matching.save()
+            pairing_new = Pairing(matching = matching)
+            pairing_new.save()
+
+
             return redirect('home')
 
         # else:
@@ -337,9 +343,14 @@ class New_matching(View):
                             single = False
                             # print (self.tentative_engagements)
                             break
+def matching_list(request):
+    matching = Matching.objects.all()
+    return render(request, 'match/matching_list.html', {'matching': matching})
 
 
-
+def pairing_list(request):
+    pairing = Pairing.objects.all()
+    return render(request, 'match/pairing_list.html', {'pairing': pairing})
 
 #
 # def new_matching(request):
