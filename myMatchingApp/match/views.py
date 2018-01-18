@@ -373,6 +373,29 @@ def pairing_list(request):
     print(pairing)
     return render(request, 'match/pairing_list.html', {'pairing': pairing})
 
+def matching_details(request, pk):
+    matching = get_object_or_404(Matching, pk=pk)
+    # community = matching.community
+    # algorithm = matching.algorithm
+    pairs = Pairing.objects.filter(matching = matching)
+    pairs_array = []
+    for pair in pairs:
+        couple = []
+        red = Red.objects.filter(pairing = pair)[0].name
+        blue = Blue.objects.filter(pairing = pair)[0].name
+        # couple.append(blue.name)
+        # couple.append(red.name)
+        couple.append(blue)
+        couple.append(red)
+        pairs_array.append(couple)
+        print(pairs_array)
+    return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array })
+
+
+
+
+
+
 #
 # def new_matching(request):
 #     if request.method == "POST":

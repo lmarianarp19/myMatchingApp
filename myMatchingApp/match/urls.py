@@ -21,6 +21,7 @@ urlpatterns = [
     path('new_matching/', views.New_matching.as_view(), name='new_matching'),
     path('matching_list/', views.matching_list, name='matching_list'),
     path('pairing_list/', views.pairing_list, name='pairing_list'),
+    path('match/<int:pk>/', views.matching_details, name='matching_details'),
     # path('matching/create/', views.MatchingCreate.as_view(), name='matching_create'),
     # path('matching/<int:pk>/update/', views.MatchingUpdate.as_view(), name='matching_update'),
     # path('matching/<int:pk>/delete/', views.MatchingDelete.as_view(), name='matching_delete'),

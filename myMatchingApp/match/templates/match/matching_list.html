@@ -14,6 +14,7 @@
     <tr>
       <td>{{ match.algorithm }}</td>
       <td>{{match.community}}</td>
+      <td><a href="{% url 'matching_details' match.pk%}" ><span> See Details </span></a></td>
     </tr>
     {% endfor %}
   </tbody>
