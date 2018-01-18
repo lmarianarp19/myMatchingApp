@@ -276,10 +276,15 @@ class New_matching(View):
         return render(request, self.template, {'form': form})
 
     def make_pair(self, proposer, recipient, subarray, community, matching):
-        get_proposer = proposer.objects.filter(name = subarray[0], community = community)
-        get_recipient = recipient.objects.filter(name = subarray[1], community = community)
+        get_proposer = proposer.objects.filter(name = subarray[0], community = community)[0]
+        get_recipient = recipient.objects.filter(name = subarray[1], community = community)[0]
         pairing_new = Pairing(matching = matching)
         pairing_new.save()
+        get_proposer.pairing = pairing_new
+        get_recipient.pairing = pairing_new
+        get_proposer.save()
+        get_recipient.save()
+
 
 
 
