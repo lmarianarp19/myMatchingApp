@@ -6,17 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/match.css' %}">
   </head>
 
-
-  <a href="{% url 'community_create' %}" ><span>New Community </span></a>
-  <a href="{% url 'community_list' %}" ><span>See all the communities </span></a>
-  <a href="{% url 'new_red' %}" ><span>Add Red </span></a>
-  <a href="{% url 'new_blue' %}" ><span>Add Blue </span></a>
-  <a href="{% url 'ranking_list' %}" ><span>See all rankings </span></a>
-  <a href="{% url 'new_matching' %}" ><span>Create Match </span></a>
-  <a href="{% url 'matching_list' %}" ><span>See all matching </span></a>
-  <a href="{% url 'pairing_list' %}" ><span>See all pairing </span></a>
-
-
+  {% include 'match/navbar.html' %}
 
 
 

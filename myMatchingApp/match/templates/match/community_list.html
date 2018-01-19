@@ -14,7 +14,7 @@
     <tr>
       <td>{{ community.name }}</td>
       <td>{{community.number_couples}}</td>
-      <td><a href="{% url 'community_update' community.pk%}" ><span> Edit </span></a></td>
+      <td><a href="{% url 'community_edit' community.pk%}" ><span> Edit </span></a></td>
       <td><a href="{% url 'community_delete' community.pk%}" ><span> Delete </span></a></td>
       <td><a href="{% url 'community_details' community.pk%}" ><span> See Details </span></a></td>
     </tr>

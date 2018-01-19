@@ -1,0 +1,29 @@
+.navbar-default {
+    background-color: Red;
+    border-color: #E7E7E7;
+}
+
+/*.container-fluid {
+  background-color: #ff8e2b;
+
+}*/
+
+.navbar-nav  a {
+  background-color: #ff8519;
+  border-color: white;
+}
+nav {
+  background-color: Red;
+}
+
+h1 {
+    color: Red;
+}
+
+/*body {
+    padding-left: 45px;
+}*/
+
+ul {
+  padding-left: 50px;
+}

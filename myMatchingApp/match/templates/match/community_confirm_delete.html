@@ -2,13 +2,14 @@
 
 {% block content %}
 
-<h1>Delete Community</h1>
+<h3>Delete Community {{ community}}</h3>
 
 <p>Are you sure you want to delete the community: {{ community }}?</p>
 
 <form action="" method="POST">
   {% csrf_token %}
-  <input type="submit" action="" value="Yes, delete." />
+  <button type="submit" class="btn btn-default">Yes, delete</button>
+  <!-- <input type="submit" action="" value="Yes, delete." /> -->
 </form>
 
 {% endblock %}

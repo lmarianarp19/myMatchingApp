@@ -92,6 +92,30 @@ def ranking_list(request):
 #         form = BlueForm()
 #     return render(request, 'match/new_blue.html', {'form': form})
 
+def community_new(request):
+    if request.method == "POST":
+        form = CommunityForm(request.POST)
+        if form.is_valid():
+            community = form.save(commit=False)
+            post.save()
+            return redirect('community_list')
+    else:
+        form = CommunityForm()
+    return render(request, 'match/community_edit.html', {'form': form})
+
+
+def community_edit(request, pk):
+    community = get_object_or_404(Community, pk=pk)
+    if request.method == "POST":
+        form = CommunityForm(request.POST, instance=community)
+        if form.is_valid():
+            community = form.save(commit=False)
+            community.save()
+            return redirect('community_details', pk=community.pk)
+    else:
+        form = CommunityForm(instance=community)
+    return render(request, 'match/community_edit.html', {'form': form})
+
 class CommunityCreate(CreateView):
     model = Community
     fields = '__all__'
@@ -365,6 +389,8 @@ class New_matching(View):
 def matching_list(request):
     matching = Matching.objects.all()
     return render(request, 'match/matching_list.html', {'matching': matching})
+
+
 
 
 def pairing_list(request):
