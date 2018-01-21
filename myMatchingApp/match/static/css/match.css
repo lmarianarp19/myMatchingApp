@@ -20,10 +20,17 @@ h1 {
     color: Red;
 }
 
-/*body {
-    padding-left: 45px;
-}*/
+.panel-body {
+  background-color: #f9deb8;
+}
 
-ul {
-  padding-left: 50px;
+body {
+  font-family: Roboto Slab
+}
+
+
+
+
+#title-home {
+  text-align: center;
 }

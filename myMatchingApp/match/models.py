@@ -64,6 +64,9 @@ class Matching(models.Model):
     choices=ALGORITHM_CHOICES,
     default=SG_BLUE_PROPOSE
     )
+
+    class Meta:
+        unique_together = (("community", "algorithm"),)
     def __str__(self):
         """
         String for representing the MyModelName object (in Admin site etc.)
@@ -74,7 +77,7 @@ class Matching(models.Model):
 
 class Community(models.Model):
     name = models.CharField(max_length=20, unique = True)
-    number_couples = models.IntegerField()
+    number_couples = models.PositiveIntegerField()
 
 
     def __str__(self):

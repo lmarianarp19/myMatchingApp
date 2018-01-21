@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Community, Red, Blue, Ranking, Matching, Pairing
-from .forms import CommunityForm, RedForm, BlueForm, RankingBlueForm, RankingRedForm, MatchingForm
+from .forms import CommunityForm, RedForm, BlueForm, RankingByBlueForm, RankingByRedForm, MatchingForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -13,7 +13,7 @@ from django.views import View
 
 def home(request):
     # communities = Community.objects.all()
-    return render(request, 'match/base.html', {})
+    return render(request, 'match/home.html', {})
 
 def community_list(request):
     communities = Community.objects.all()
@@ -137,11 +137,53 @@ def community_details(request, pk):
     blues = Blue.objects.filter(community = community)
     return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues})
 
+
 def blue_details(request, pk):
     blue = get_object_or_404(Blue, pk=pk)
     community = blue.community
     reds = Red.objects.filter(community = community)
-    return render(request, 'match/blue_details.html', {'community': community, 'blue': blue, 'reds': reds, 'blue_id': pk})
+    red_scores = []
+    for red in reds:
+        name_score = {}
+        rank = Ranking.objects.filter(red=red, blue=blue)
+        name_score['red_name'] = red.name
+        name_score['red_pk'] = red.pk
+        print ('this is the pk')
+        print(name_score['red_pk'])
+        if rank:
+            name_score['rank_given'] = rank[0].blue_to_red_score
+        else:
+            name_score['rank_given'] = 'No score given yet'
+        red_scores.append(name_score)
+    rankings = Ranking.objects.filter(blue = blue)
+    # puede ser mas de un pairing, uno por algoritmo
+    pairs_algorithm = {}
+    if blue.pairing:
+        pairing = Pairing.objects.filter(pk = blue.pairing.pk)
+        for pair in pairing:
+            # no se si puedo asignar pair como nombre de un hash
+            # print('this is the pair')
+            # print(pair.values())
+            red_algorithm = {}
+            red_pair = Red.objects.filter(pairing = pair)
+            red_name = red_pair[0].name
+            matching = pair.matching
+            # TODO cuando ponga la condicion de unique togehter matching y community puedo sacr el puntaje de red
+
+            # happiness = Ranking.objects.filter(red = red_pair)
+            # print('this is happiness')
+            # print(happiness)
+            # satisfaction = happiness[0].blue_to_red_score
+            # tal ves esto no funciona porque talvez matching es solo una id y no todo el modelo
+            algorithm = matching.algorithm
+            red_algorithm['red_name'] = red_name
+            red_algorithm['algorithm'] = algorithm
+            # red_algorithm['happiness'] = satisfaccion
+            pairs_algorithm[pair.pk] = red_algorithm
+        print('this is the pairs_algorithm')
+        esto = pairs_algorithm
+        print(esto)
+    return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm })
 
 def red_details(request, pk):
     red = get_object_or_404(Red, pk=pk)
@@ -150,7 +192,7 @@ def red_details(request, pk):
     blues = Blue.objects.filter(community = community)
     return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red, 'red_id': pk})
 
-def new_ranking_blue(request, red_id, blue_id):
+def new_ranking_by_blue(request, red_id, blue_id):
     # the id are strings, I need to pass it to integers
     blue_id = int(blue_id)
     red_id = int(red_id)
@@ -164,10 +206,10 @@ def new_ranking_blue(request, red_id, blue_id):
         # if the ranking exists
         if ranking:
             # edit the actual ranking instance.
-            form =  RankingBlueForm(request.POST, instance = ranking.first())
+            form =  RankingByBlueForm(request.POST, instance = ranking.first())
         else:
             # if ranking doesn't exist create a new instance of ranking.
-            form = RankingBlueForm(request.POST)
+            form = RankingByBlueForm(request.POST)
         if form.is_valid():
             ranking = form.save(commit=False)
             # add blue and red to the ranking model
@@ -176,10 +218,10 @@ def new_ranking_blue(request, red_id, blue_id):
             ranking.save()
             return redirect('home')
     else:
-        form = RankingBlueForm()
-    return render(request, 'match/new_ranking_blue.html', {'form': form})
+        form = RankingByBlueForm()
+    return render(request, 'match/new_ranking_by_blue.html', {'form': form})
 
-def new_ranking_red(request, blue_id, red_id):
+def new_ranking_by_red(request, blue_id, red_id):
     # TODO ver si puedo limpiar esto, haciendo solo una funcion para azul y rojo
     blue_id = int(blue_id)
     red_id = int(red_id)
@@ -189,9 +231,9 @@ def new_ranking_red(request, blue_id, red_id):
     if request.method == "POST":
         if ranking:
             # the red and blue form are different because in the red form I want to rank blue and viceversa
-            form =  RankingRedForm(request.POST, instance = ranking.first())
+            form =  RankingByRedForm(request.POST, instance = ranking.first())
         else:
-            form = RankingRedForm(request.POST)
+            form = RankingByRedForm(request.POST)
         if form.is_valid():
             ranking = form.save(commit=False)
             ranking.blue = blue
@@ -200,7 +242,7 @@ def new_ranking_red(request, blue_id, red_id):
             return redirect('home')
     else:
         form = RankingRedForm()
-    return render(request, 'match/new_ranking_red.html', {'form': form})
+    return render(request, 'match/new_ranking_by_red.html', {'form': form})
 
 def ranking_list(request):
     rankings = Ranking.objects.all()

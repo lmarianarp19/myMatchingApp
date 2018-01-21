@@ -31,12 +31,12 @@ class BlueForm(forms.ModelForm):
         # exclude = ('Pairing',)
 
 
-class RankingBlueForm(forms.ModelForm):
+class RankingByBlueForm(forms.ModelForm):
     class Meta:
         model = Ranking
         fields = ('blue_to_red_score',)
 
-class RankingRedForm(forms.ModelForm):
+class RankingByRedForm(forms.ModelForm):
     class Meta:
         model = Ranking
         fields = ('red_to_blue_score',)

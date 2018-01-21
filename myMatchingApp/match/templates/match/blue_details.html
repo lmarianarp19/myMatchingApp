@@ -1,16 +1,44 @@
 {% extends 'match/base.html' %}
 
 {% block content %}
-<h1> Name: {{blue.name }}</h1>
-<h2> Community: {{community.name}}</h2>
-<h2> Pairing:</h2>
-<ul>
-  <li> {{blue.pairing}} </li>
-</ul>
-  <ul>
-    <p> This are the red elements in {{community}}</p>
-    {% for red in reds %}
-    <li><a href="{% url 'new_ranking_blue' blue_id red.pk%}" ><span> {{red}} </span></a></li>
+<h1> Blue member {{blue.name }}</h1>
+<h2> Community: {{blue.community}} </h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Red Members</th>
+      <th scope="col">Ranking Given</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for red in red_scores %}
+    <tr>
+      <td>{{ red.red_name }}</td>
+      <td>{{ red.rank_given}}</td>
+      <!-- TODO to change this link  -->
+      <td><a href="{% url 'new_ranking_by_blue' blue.pk red.red_pk %}" ><span> Update Ranking </span></a></td>
+    </tr>
     {% endfor %}
-  </ul>
+  </tbody>
+</table>
+<h2> Pairing</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Pair</th>
+      <th scope="col">Ranking Given</th>
+      <th scope="col"> Algorithm </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for key, value in pairs_algorithm.items %}
+    <tr>
+      <td>{{ value.red_name }}</td>
+      <td>{{ value.algorithm }}</td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
   {% endblock %}
