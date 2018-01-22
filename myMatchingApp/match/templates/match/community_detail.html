@@ -40,4 +40,6 @@
   <li><a href="{% url 'blue_details' blue.pk%}" ><span> {{blue.name}} </span></a></li>
   {% endfor %}
 </ul>
+
+<a href="{% url 'new_matching' %}" class="btn btn-default"> Create Match </a> 
 {% endblock %}

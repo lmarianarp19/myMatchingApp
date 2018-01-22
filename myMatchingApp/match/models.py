@@ -34,8 +34,8 @@ class Blue(models.Model):
         return self.name
 
 class Ranking(models.Model):
-    red_to_blue_score = models.IntegerField(null=True)
-    blue_to_red_score = models.IntegerField(null=True)
+    red_to_blue_score = models.PositiveIntegerField(null=True)
+    blue_to_red_score = models.PositiveIntegerField(null=True)
     red = models.ForeignKey('Red', on_delete=models.CASCADE)
     blue = models.ForeignKey('Blue', on_delete=models.CASCADE )
     # def __str__(self):
@@ -54,13 +54,13 @@ class Pairing(models.Model):
 
 class Matching(models.Model):
     community = models.ForeignKey('Community', on_delete=models.CASCADE)
-    SG_BLUE_PROPOSE = 'SGBP'
-    SG_RED_PROPOSE = 'SGRP'
+    SG_BLUE_PROPOSE = 'Shapley Gale Blue Proposes'
+    SG_RED_PROPOSE = 'Shapley Gale Red Proposes'
     ALGORITHM_CHOICES = (
-        (SG_BLUE_PROPOSE, 'Shapley Gale Blue Propose'),
-        (SG_RED_PROPOSE, 'Shapley Gale Red Propose'),
+        (SG_BLUE_PROPOSE, 'Shapley Gale Blue Proposes'),
+        (SG_RED_PROPOSE, 'Shapley Gale Red Proposes'),
     )
-    algorithm = models.CharField(max_length=10,
+    algorithm = models.CharField(max_length=50,
     choices=ALGORITHM_CHOICES,
     default=SG_BLUE_PROPOSE
     )

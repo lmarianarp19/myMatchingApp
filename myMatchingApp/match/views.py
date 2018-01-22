@@ -148,9 +148,8 @@ def blue_details(request, pk):
         rank = Ranking.objects.filter(red=red, blue=blue)
         name_score['red_name'] = red.name
         name_score['red_pk'] = red.pk
-        print ('this is the pk')
-        print(name_score['red_pk'])
-        if rank:
+        # I need this condition because sometimes the ranking is ceate with value None
+        if rank and (rank[0].blue_to_red_score):
             name_score['rank_given'] = rank[0].blue_to_red_score
         else:
             name_score['rank_given'] = 'No score given yet'
@@ -183,7 +182,7 @@ def blue_details(request, pk):
         print('this is the pairs_algorithm')
         esto = pairs_algorithm
         print(esto)
-    return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm })
+    return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm, 'community': community })
 
 
 def red_details(request, pk):
@@ -199,7 +198,7 @@ def red_details(request, pk):
         rank = Ranking.objects.filter(red=red, blue=blue)
         name_score['blue_name'] = blue.name
         name_score['blue_pk'] = blue.pk
-        if rank:
+        if rank and (rank[0].red_to_blue_score):
             name_score['rank_given'] = rank[0].red_to_blue_score
         else:
             name_score['rank_given'] = 'No score given yet'
@@ -221,7 +220,7 @@ def red_details(request, pk):
             blue_algorithm['blue_name'] = blue_name
             blue_algorithm['algorithm'] = algorithm
             pairs_algorithm[pair.pk] = blue_algorithm
-    return render(request, 'match/red_details.html', {'red': red,  'red_id': pk, 'blue_scores' : blue_scores,  'pairs_algorithm': pairs_algorithm })
+    return render(request, 'match/red_details.html', {'red': red,  'red_id': pk, 'blue_scores' : blue_scores,  'pairs_algorithm': pairs_algorithm, 'community' : community })
 
 def new_ranking_by_blue(request, red_id, blue_id):
     # the id are strings, I need to pass it to integers
@@ -247,10 +246,10 @@ def new_ranking_by_blue(request, red_id, blue_id):
             ranking.blue = blue
             ranking.red = red
             ranking.save()
-            return redirect('home')
+            return redirect('blue_details', pk = blue.pk)
     else:
         form = RankingByBlueForm()
-    return render(request, 'match/new_ranking_by_blue.html', {'form': form})
+    return render(request, 'match/new_ranking_by_blue.html', {'form': form, 'red': red})
 
 def new_ranking_by_red(request, blue_id, red_id):
     # TODO ver si puedo limpiar esto, haciendo solo una funcion para azul y rojo
@@ -270,10 +269,10 @@ def new_ranking_by_red(request, blue_id, red_id):
             ranking.blue = blue
             ranking.red = red
             ranking.save()
-            return redirect('home')
+            return redirect('red_details',  pk = red_id)
     else:
         form = RankingByRedForm()
-    return render(request, 'match/new_ranking_by_red.html', {'form': form})
+    return render(request, 'match/new_ranking_by_red.html', {'form': form, 'blue':blue})
 
 def ranking_list(request):
     rankings = Ranking.objects.all()
@@ -281,18 +280,10 @@ def ranking_list(request):
 
 
 class New_matching(View):
-    # tentative_engagements = []
-    # free_proposer = []
-    # proposer_ranking = {}
-    # recipient_ranking = {}
     form_class = MatchingForm
     # Que hace este initial??
     initial = {'key': 'value'}
     template = 'match/new_matching.html'
-    # en el ejemplo en linea tienen un campo con un hash y la template en esta parte
-    # print('this is tentative_engagements at the beginning')
-    # print(tentative_engagements)
-    #
     def __init__(self):
         self.tentative_engagements = []
         self.free_proposer = []
@@ -337,14 +328,14 @@ class New_matching(View):
                 ranks_red_to_blue[rank.red.name] = red_to_blue
 
             # set who is the proposer and who is the recipent
-            if (algorithm == 'SGBP'):
+            if (algorithm == 'Shapley Gale Blue Proposes'):
                 self.proposer_ranking = ranks_blue_to_red
                 self.recipient_ranking = ranks_red_to_blue
                 proposer_instance = blues
                 recipent_instance = reds
                 proposer = Blue
                 recipient = Red
-            elif(algorithm == 'SGRP'):
+            elif(algorithm == 'Shapley Gale Red Proposes'):
                 self.proposer_ranking = ranks_red_to_blue
                 self.recipient_ranking = ranks_blue_to_red
                 proposer_instance = reds
@@ -366,7 +357,7 @@ class New_matching(View):
             # pairing_new.save()
 
 
-            return redirect('home')
+            return redirect('matching_details', pk = matching.pk)
 
         # else:
         #     form = MatchingForm()
@@ -495,7 +486,9 @@ def matching_details(request, pk):
         pairs_array.append(couple)
     return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array })
 
-
+class MatchingDelete(DeleteView):
+    model = Matching
+    success_url = reverse_lazy('matching_list')
 
 
 

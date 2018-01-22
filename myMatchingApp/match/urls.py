@@ -10,7 +10,7 @@ urlpatterns = [
     path('new_blue', views.new_blue, name='new_blue'),
     # path('community/new/', views.community_new, name='community_new'),
     # path('community/<int:pk>/edit/', views.community_edit, name='community_edit'),
-    path('communityit/<int:pk>/delete/', views.CommunityDelete.as_view(), name='community_delete'),
+    path('community/<int:pk>/delete/', views.CommunityDelete.as_view(), name='community_delete'),
     path('community/<int:pk>/', views.community_details, name='community_details'),
     path('blue/<int:pk>/', views.blue_details, name='blue_details'),
     path('red/<int:pk>/', views.red_details, name='red_details'),
@@ -22,7 +22,8 @@ urlpatterns = [
     path('pairing_list/', views.pairing_list, name='pairing_list'),
     path('match/<int:pk>/', views.matching_details, name='matching_details'),
     path('community/new/', views.CommunityCreate.as_view(), name='community_new'),
-    path('commmutnity/<int:pk>/edit/', views.CommunityUpdate.as_view(), name='community_edit'),
+    path('commmunity/<int:pk>/edit/', views.CommunityUpdate.as_view(), name='community_edit'),
+    path('matching/<int:pk>/delete/', views.MatchingDelete.as_view(), name='matching_delete'),
     # path('matching/<int:pk>/delete/', views.MatchingDelete.as_view(), name='matching_delete'),
 
 ]
