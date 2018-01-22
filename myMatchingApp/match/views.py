@@ -43,7 +43,7 @@ def new_red(request):
 
             red = form.save(commit=False)
             red.save()
-            return redirect('home')
+            return redirect('community_details', pk = community.pk)
     else:
         form = RedForm()
     return render(request, 'match/new_red.html', {'form': form})
@@ -62,7 +62,7 @@ def new_blue(request):
 
             blue = form.save(commit=False)
             blue.save()
-            return redirect('home')
+            return redirect('community_details', pk = community.pk)
     else:
         form = BlueForm()
     return render(request, 'match/new_blue.html', {'form': form})
@@ -135,8 +135,15 @@ def community_details(request, pk):
     community = get_object_or_404(Community, pk=pk)
     reds = Red.objects.filter(community = community)
     blues = Blue.objects.filter(community = community)
-    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues})
+    add_red = can_add_members(community, reds)
+    add_blue = can_add_members(community, blues)
+    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues, 'add_red': add_red, 'add_blue': add_blue})
 
+def can_add_members(community, group):
+    if len(group) < int(community.number_couples):
+        return True
+    else:
+        return False
 
 def blue_details(request, pk):
     blue = get_object_or_404(Blue, pk=pk)
@@ -465,7 +472,7 @@ def pairing_list(request):
 
 def matching_details(request, pk):
     matching = get_object_or_404(Matching, pk=pk)
-    # community = matching.community
+    community = matching.community
     # algorithm = matching.algorithm
     pairs = Pairing.objects.filter(matching = matching)
     pairs_array = []
@@ -484,7 +491,7 @@ def matching_details(request, pk):
         couple.append(blue_happiness)
         couple.append(red_happiness)
         pairs_array.append(couple)
-    return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array })
+    return render(request, 'match/matching_details.html', {'matching': matching, 'pairs': pairs, 'pairs_array' : pairs_array, 'community' : community })
 
 class MatchingDelete(DeleteView):
     model = Matching

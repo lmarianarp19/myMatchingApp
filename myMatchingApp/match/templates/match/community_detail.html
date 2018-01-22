@@ -26,6 +26,9 @@
 
 
 <h2> Reds </h2>
+{% if add_red %}
+  <a href="{% url 'new_red' %}" class="btn btn-default"> Add Red Member </a>
+{% endif %}
 <ul>
 {% for red in reds %}
   <li><a href="{% url 'red_details' red.pk%}" ><span> {{red.name}} </span></a></li>
@@ -34,12 +37,16 @@
 
 
 
+
 <h2> Blues </h2>
+{% if add_blue %}
+  <a href="{% url 'new_blue' %}" class="btn btn-default"> Add Blue Member </a>
+{% endif %}
   <ul>
   {% for blue in blues %}
   <li><a href="{% url 'blue_details' blue.pk%}" ><span> {{blue.name}} </span></a></li>
   {% endfor %}
 </ul>
 
-<a href="{% url 'new_matching' %}" class="btn btn-default"> Create Match </a> 
+<a href="{% url 'new_matching' %}" class="btn btn-default"> Create Match </a>
 {% endblock %}
