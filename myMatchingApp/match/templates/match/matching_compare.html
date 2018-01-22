@@ -1,0 +1,20 @@
+{% extends 'match/base.html' %}
+
+{% block content %}
+<h1>Compare Matching</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Community Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for community in communities %}
+    <tr>
+      <td>{{ community.name }}</td>
+      <td><a href="{% url 'make_graphs' community.pk%}" ><span> Compare </span></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

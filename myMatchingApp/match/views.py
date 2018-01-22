@@ -7,6 +7,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError
 from django.views import View
+# puse esto para hacer los graficos, tal vez no lo necesito. Si no funciona es porque no puse el link a ajax
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -164,31 +166,43 @@ def blue_details(request, pk):
     rankings = Ranking.objects.filter(blue = blue)
     # puede ser mas de un pairing, uno por algoritmo
     pairs_algorithm = {}
-    if blue.pairing:
-        pairing = Pairing.objects.filter(pk = blue.pairing.pk)
-        for pair in pairing:
-            # no se si puedo asignar pair como nombre de un hash
-            # print('this is the pair')
-            # print(pair.values())
+    blue_pairs = Pairing.objects.filter(pk = blue.pk)
+    if blue_pairs:
+        for pair in blue_pairs:
             red_algorithm = {}
-            red_pair = Red.objects.filter(pairing = pair)
-            red_name = red_pair[0].name
+            red_pair = pair.red
+            red_name = red_pair.name
             matching = pair.matching
-            # TODO cuando ponga la condicion de unique togehter matching y community puedo sacr el puntaje de red
-
-            # happiness = Ranking.objects.filter(red = red_pair)
-            # print('this is happiness')
-            # print(happiness)
-            # satisfaction = happiness[0].blue_to_red_score
-            # tal ves esto no funciona porque talvez matching es solo una id y no todo el modelo
             algorithm = matching.algorithm
-            red_algorithm['red_name'] = red_name
-            red_algorithm['algorithm'] = algorithm
-            # red_algorithm['happiness'] = satisfaccion
-            pairs_algorithm[pair.pk] = red_algorithm
-        print('this is the pairs_algorithm')
-        esto = pairs_algorithm
-        print(esto)
+            blue_algorithm['red_name'] = red_name
+            blue_algorithm['algorithm'] = algorithm
+            pairs_algorithm[pair.pk] = blue_algorithm
+
+    # if blue.pairing:
+    #     pairing = Pairing.objects.filter(pk = blue.pairing.pk)
+    #     for pair in pairing:
+    #         # no se si puedo asignar pair como nombre de un hash
+    #         # print('this is the pair')
+    #         # print(pair.values())
+    #         red_algorithm = {}
+    #         red_pair = Red.objects.filter(pairing = pair)
+    #         red_name = red_pair[0].name
+    #         matching = pair.matching
+    #         # TODO cuando ponga la condicion de unique togehter matching y community puedo sacr el puntaje de red
+    #
+    #         # happiness = Ranking.objects.filter(red = red_pair)
+    #         # print('this is happiness')
+    #         # print(happiness)
+    #         # satisfaction = happiness[0].blue_to_red_score
+    #         # tal ves esto no funciona porque talvez matching es solo una id y no todo el modelo
+    #         algorithm = matching.algorithm
+    #         red_algorithm['red_name'] = red_name
+    #         red_algorithm['algorithm'] = algorithm
+    #         # red_algorithm['happiness'] = satisfaccion
+    #         pairs_algorithm[pair.pk] = red_algorithm
+    #     print('this is the pairs_algorithm')
+    #     esto = pairs_algorithm
+    #     print(esto)
     return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm, 'community': community })
 
 
@@ -216,17 +230,29 @@ def red_details(request, pk):
 
     # in case there is  a pair, it gives the pair and the algoritm.
     pairs_algorithm = {}
-    if red.pairing:
-        pairing = Pairing.objects.filter(pk = red.pairing.pk)
-        for pair in pairing:
+    red_pairs = Pairing.objects.filter(pk = red.pk)
+    if red_pairs:
+        for pair in red_pairs:
             blue_algorithm = {}
-            blue_pair = Blue.objects.filter(pairing = pair)
-            blue_name = blue_pair[0].name
+            blue_pair = pair.blue
+            blue_name = blue_pair.name
             matching = pair.matching
             algorithm = matching.algorithm
             blue_algorithm['blue_name'] = blue_name
             blue_algorithm['algorithm'] = algorithm
             pairs_algorithm[pair.pk] = blue_algorithm
+    #
+    # if red.pairing:
+    #     pairing = Pairing.objects.filter(pk = red.pairing.pk)
+    #     for pair in pairing:
+    #         blue_algorithm = {}
+    #         blue_pair = Blue.objects.filter(pairing = pair)
+    #         blue_name = blue_pair[0].name
+    #         matching = pair.matching
+    #         algorithm = matching.algorithm
+    #         blue_algorithm['blue_name'] = blue_name
+    #         blue_algorithm['algorithm'] = algorithm
+    #         pairs_algorithm[pair.pk] = blue_algorithm
     return render(request, 'match/red_details.html', {'red': red,  'red_id': pk, 'blue_scores' : blue_scores,  'pairs_algorithm': pairs_algorithm, 'community' : community })
 
 def new_ranking_by_blue(request, red_id, blue_id):
@@ -350,8 +376,6 @@ class New_matching(View):
                 proposer = Red
                 recipient = Blue
             self.all_proposer(proposer_instance)
-            print('this is all proposer')
-            print(self.all_proposer)
             # self.free_proposer =all_proposer(self, proposer_instance)
             self.another_iteration_step()
             print('this is the final match')
@@ -373,12 +397,15 @@ class New_matching(View):
     def make_pair(self, proposer, recipient, subarray, community, matching):
         get_proposer = proposer.objects.filter(name = subarray[0], community = community)[0]
         get_recipient = recipient.objects.filter(name = subarray[1], community = community)[0]
-        pairing_new = Pairing(matching = matching)
+        if proposer == Blue:
+            pairing_new = Pairing(matching = matching, blue = get_proposer, red = get_recipient)
+        else:
+            pairing_new = Pairing(matching = matching, red = get_proposer, blue = get_recipient)
         pairing_new.save()
-        get_proposer.pairing = pairing_new
-        get_recipient.pairing = pairing_new
-        get_proposer.save()
-        get_recipient.save()
+        # get_proposer.pairing = pairing_new
+        # get_recipient.pairing = pairing_new
+        # get_proposer.save()
+        # get_recipient.save()
 
 
 
@@ -497,8 +524,40 @@ class MatchingDelete(DeleteView):
     model = Matching
     success_url = reverse_lazy('matching_list')
 
+def matching_compare(request):
+    communities = Community.objects.all()
+    return render(request, 'match/matching_compare.html', {'communities': communities})
 
 
+def make_graphs(request, pk):
+    community = Community.objects.filter(pk = pk)
+    # son dos matching
+    matchings = Matching.objects.filter(community = community[0])
+    data = {}
+    for match in matchings:
+        # son varios pairs por cada algoritmo
+        pairs = Pairing.objects.filter(matching = match)
+        print('pairs')
+        print(pairs.values())
+        algorithm = match.algorithm
+        scores = { }
+        scores['algorithm'] = algorithm
+
+        for pair in pairs:
+            red = Red.objects.filter(pairing = pair)
+            blue = Blue.objects.filter(pairing = pair)
+            print('blue')
+            print(blue)
+            print('red')
+            print(red)
+            ranking = Ranking.objects.filter(red= red[0], blue = blue[0])
+            blue_happiness = ranking[0].blue_to_red_score
+            red_happiness = ranking[0].red_to_blue_score
+            scores[blue[0].name] = blue_happiness
+            scores[red[0].name] = red_happiness
+        data['algoritm'] = scores
+    # return JsonResponse(data, pk)
+    return render(request, 'match/new_graph.html', {'data': data})
 
 #
 # def new_matching(request):

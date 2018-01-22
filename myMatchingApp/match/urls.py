@@ -24,6 +24,8 @@ urlpatterns = [
     path('community/new/', views.CommunityCreate.as_view(), name='community_new'),
     path('commmunity/<int:pk>/edit/', views.CommunityUpdate.as_view(), name='community_edit'),
     path('matching/<int:pk>/delete/', views.MatchingDelete.as_view(), name='matching_delete'),
+    path('matching_compare/', views.matching_compare, name= 'matching_compare'),
+    path('matching_compare/<int:pk>/', views.make_graphs, name='make_graphs')
     # path('matching/<int:pk>/delete/', views.MatchingDelete.as_view(), name='matching_delete'),
 
 ]
