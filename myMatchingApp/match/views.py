@@ -185,12 +185,43 @@ def blue_details(request, pk):
         print(esto)
     return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm })
 
+
 def red_details(request, pk):
     red = get_object_or_404(Red, pk=pk)
     community = red.community
-    # TODO sera qut tengo que cmabiar esto? es blues con red
+    # get the blues that belong to this community
     blues = Blue.objects.filter(community = community)
-    return render(request, 'match/red_details.html', {'community': community, 'blues': blues, 'red': red, 'red_id': pk})
+    blue_scores = []
+    for blue in blues:
+        # hash to store the name of the blue and the score given by red.
+        name_score = {}
+        # get the ranking that have red and blue
+        rank = Ranking.objects.filter(red=red, blue=blue)
+        name_score['blue_name'] = blue.name
+        name_score['blue_pk'] = blue.pk
+        if rank:
+            name_score['rank_given'] = rank[0].red_to_blue_score
+        else:
+            name_score['rank_given'] = 'No score given yet'
+        blue_scores.append(name_score)
+
+
+    rankings = Ranking.objects.filter(red = red)
+
+    # in case there is  a pair, it gives the pair and the algoritm.
+    pairs_algorithm = {}
+    if red.pairing:
+        pairing = Pairing.objects.filter(pk = red.pairing.pk)
+        for pair in pairing:
+            blue_algorithm = {}
+            blue_pair = Blue.objects.filter(pairing = pair)
+            blue_name = blue_pair[0].name
+            matching = pair.matching
+            algorithm = matching.algorithm
+            blue_algorithm['blue_name'] = blue_name
+            blue_algorithm['algorithm'] = algorithm
+            pairs_algorithm[pair.pk] = blue_algorithm
+    return render(request, 'match/red_details.html', {'red': red,  'red_id': pk, 'blue_scores' : blue_scores,  'pairs_algorithm': pairs_algorithm })
 
 def new_ranking_by_blue(request, red_id, blue_id):
     # the id are strings, I need to pass it to integers
@@ -241,7 +272,7 @@ def new_ranking_by_red(request, blue_id, red_id):
             ranking.save()
             return redirect('home')
     else:
-        form = RankingRedForm()
+        form = RankingByRedForm()
     return render(request, 'match/new_ranking_by_red.html', {'form': form})
 
 def ranking_list(request):
