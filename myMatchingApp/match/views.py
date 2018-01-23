@@ -174,9 +174,9 @@ def blue_details(request, pk):
             red_name = red_pair.name
             matching = pair.matching
             algorithm = matching.algorithm
-            blue_algorithm['red_name'] = red_name
-            blue_algorithm['algorithm'] = algorithm
-            pairs_algorithm[pair.pk] = blue_algorithm
+            red_algorithm['red_name'] = red_name
+            red_algorithm['algorithm'] = algorithm
+            pairs_algorithm[pair.pk] = red_algorithm
 
     # if blue.pairing:
     #     pairing = Pairing.objects.filter(pk = blue.pairing.pk)
@@ -531,29 +531,84 @@ def matching_compare(request):
 
 def make_graphs(request, pk):
     community = Community.objects.filter(pk = pk)
+    community_size = int(community[0].number_couples)
     # son dos matching
     matchings = Matching.objects.filter(community = community[0])
+    # get red and blue members in commmunity
+    reds = Red.objects.filter(community = community[0])
+    blues = Blue.objects.filter(community = community[0])
 
     labels = []
-    dataset = [1,1]
-    data = {}
+
+    for red in reds:
+        labels.append(red.name)
+
+    for blue in blues:
+        labels.append(blue.name)
+
+    # get hash where key in the element and the value is the index
+    hash_labels = {k: v for v, k in enumerate(labels) }
+
+
+    datasets = []
+
+    # son dos marching
     for match in matchings:
         # son varios pairs por cada algoritmo
+        one_match = {}
+        # muchos pares, igual al numero de gente en la comunidad
         pairs = Pairing.objects.filter(matching = match)
         algorithm = match.algorithm
-        scores = { }
-        # scores['algorithm'] = algorithm
+        one_match['label'] = algorithm
+        if algorithm == 'Shapley Gale Blue Proposes':
+            one_match['backgroundColor'] = "rgba(0,0,200,0.2)"
+        else:
+            one_match['backgroundColor'] = "rgba(200,0,0,0.2)"
+
+        # Get the happiness level in a hash
+        scores = {}
+
 
         for pair in pairs:
+            # get couple
             blue = pair.blue
             red = pair.red
+            # Get the scores of this couple
             ranking = Ranking.objects.filter(red= red, blue = blue)
             blue_happiness = ranking[0].blue_to_red_score
             red_happiness = ranking[0].red_to_blue_score
             scores[blue.name] = blue_happiness
             scores[red.name] = red_happiness
-        data[algorithm] = scores
-    return render(request, 'match/new_graph.html', {'data': data, 'labels': labels, 'dataset': dataset})
+
+        # create empty list
+        data = [None] * (int(community[0].number_couples)* 2)
+
+        for name, score in scores.items():
+            # get index of name in labels
+            index = hash_labels[name]
+            data[index] = score
+
+        one_match['data'] = data
+        datasets.append(one_match)
+
+
+    # for match in matchings:
+    #     # son varios pairs por cada algoritmo
+    #     pairs = Pairing.objects.filter(matching = match)
+    #     algorithm = match.algorithm
+    #     scores = { }
+    #     # scores['algorithm'] = algorithm
+    #
+    #     for pair in pairs:
+    #         blue = pair.blue
+    #         red = pair.red
+    #         ranking = Ranking.objects.filter(red= red, blue = blue)
+    #         blue_happiness = ranking[0].blue_to_red_score
+    #         red_happiness = ranking[0].red_to_blue_score
+    #         scores[blue.name] = blue_happiness
+    #         scores[red.name] = red_happiness
+    #     data[algorithm] = scores
+    return render(request, 'match/new_graph.html', {'labels': labels, 'datasets': datasets, 'community_size': community_size})
 
 #
 # def new_matching(request):
