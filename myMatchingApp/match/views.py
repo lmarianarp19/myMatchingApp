@@ -533,31 +533,27 @@ def make_graphs(request, pk):
     community = Community.objects.filter(pk = pk)
     # son dos matching
     matchings = Matching.objects.filter(community = community[0])
+
+    labels = []
+    dataset = [1,1]
     data = {}
     for match in matchings:
         # son varios pairs por cada algoritmo
         pairs = Pairing.objects.filter(matching = match)
-        print('pairs')
-        print(pairs.values())
         algorithm = match.algorithm
         scores = { }
-        scores['algorithm'] = algorithm
+        # scores['algorithm'] = algorithm
 
         for pair in pairs:
-            red = Red.objects.filter(pairing = pair)
-            blue = Blue.objects.filter(pairing = pair)
-            print('blue')
-            print(blue)
-            print('red')
-            print(red)
-            ranking = Ranking.objects.filter(red= red[0], blue = blue[0])
+            blue = pair.blue
+            red = pair.red
+            ranking = Ranking.objects.filter(red= red, blue = blue)
             blue_happiness = ranking[0].blue_to_red_score
             red_happiness = ranking[0].red_to_blue_score
-            scores[blue[0].name] = blue_happiness
-            scores[red[0].name] = red_happiness
-        data['algoritm'] = scores
-    # return JsonResponse(data, pk)
-    return render(request, 'match/new_graph.html', {'data': data})
+            scores[blue.name] = blue_happiness
+            scores[red.name] = red_happiness
+        data[algorithm] = scores
+    return render(request, 'match/new_graph.html', {'data': data, 'labels': labels, 'dataset': dataset})
 
 #
 # def new_matching(request):
