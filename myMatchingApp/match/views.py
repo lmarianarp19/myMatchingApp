@@ -539,12 +539,17 @@ def make_graphs(request, pk):
     blues = Blue.objects.filter(community = community[0])
 
     labels = []
+    labels_name = []
 
     for red in reds:
+        label = "Red " + red.name
         labels.append(red.name)
+        labels_name.append(label)
 
     for blue in blues:
+        label = "Blue " + blue.name
         labels.append(blue.name)
+        labels_name.append(label)
 
     # get hash where key in the element and the value is the index
     hash_labels = {k: v for v, k in enumerate(labels) }
@@ -608,7 +613,7 @@ def make_graphs(request, pk):
     #         scores[blue.name] = blue_happiness
     #         scores[red.name] = red_happiness
     #     data[algorithm] = scores
-    return render(request, 'match/new_graph.html', {'labels': labels, 'datasets': datasets, 'community_size': community_size})
+    return render(request, 'match/new_graph.html', {'labels': labels_name, 'datasets': datasets, 'community_size': community_size})
 
 #
 # def new_matching(request):

@@ -2,8 +2,8 @@
 
 {% block content %}
 <h1>Community List</h1>
-<table class="table">
-  <thead>
+<table class="table table-striped table-dark">
+  <thead class="thead-light">
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Number of Couples</th>
@@ -14,9 +14,9 @@
     <tr>
       <td>{{ community.name }}</td>
       <td>{{community.number_couples}}</td>
-      <td><a href="{% url 'community_edit' community.pk%}" ><span> Edit </span></a></td>
-      <td><a href="{% url 'community_delete' community.pk%}" ><span> Delete </span></a></td>
-      <td><a href="{% url 'community_details' community.pk%}" ><span> See Details </span></a></td>
+      <td><a class="btn btn-default" href="{% url 'community_edit' community.pk%}" ><span> Edit </span></a></td>
+      <td><a class="btn btn-default" href="{% url 'community_delete' community.pk%}" ><span> Delete </span></a></td>
+      <td><a class="btn btn-default" href="{% url 'community_details' community.pk%}" ><span> See Details </span></a></td>
     </tr>
     {% endfor %}
   </tbody>
