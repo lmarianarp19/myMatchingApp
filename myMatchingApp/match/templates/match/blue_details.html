@@ -1,45 +1,50 @@
 {% extends 'match/base.html' %}
 
 {% block content %}
-<h1> Blue member {{blue.name }}</h1>
-<a class="btn btn-default" href="{% url 'community_details' community.pk %}">Come back to Community Page </a>
-<h2> Community: {{blue.community}} </h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Red Members</th>
-      <th scope="col">Ranking Given</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for red in red_scores %}
-    <tr>
-      <td>{{ red.red_name }}</td>
-      <td>{{ red.rank_given}}</td>
-      <!-- TODO to change this link  -->
-      <td><a href="{% url 'new_ranking_by_blue' blue.pk red.red_pk %}" ><span> Update Ranking </span></a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<h1> Blue member "{{blue.name }}"</h1>
+<a  href="{% url 'community_details' community.pk %}">Come back to Community Page </a>
+<h2> Community "{{blue.community}}" </h2>
+<div class='table-container'>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th class ="col-title" scope="col">Red Members</th>
+        <th class ="col-title" scope="col">Ranking Given</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for red in red_scores %}
+      <tr>
+        <td>{{ red.red_name }}</td>
+        <td>{{ red.rank_given}}</td>
+        <!-- TODO to change this link  -->
+        <td><a class="btn btn-default" href="{% url 'new_ranking_by_blue' blue.pk red.red_pk %}" ><span> Update Ranking </span></a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <h2> Pairing</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Pair</th>
-      <th scope="col">Ranking Given</th>
-      <th scope="col"> Algorithm </th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for key, value in pairs_algorithm.items %}
-    <tr>
-      <td>{{ value.red_name }}</td>
-      <td>{{ value.algorithm }}</td>
+<div class='table-container'>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th class = "col-title" scope="col">Pair</th>
+        <th class = "col-title" scope="col">Ranking Given</th>
+        <th class = "col-title" scope="col"> Algorithm </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key, value in pairs_algorithm.items %}
+      <tr>
+        <td>{{ value.red_name }}</td>
+        <td>{{ value.ranking_to_red }}</td>
+        <td>{{ value.algorithm }}</td>
 
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-  {% endblock %}
+{% endblock %}

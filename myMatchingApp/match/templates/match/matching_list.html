@@ -2,11 +2,12 @@
 
 {% block content %}
 <h1>Matching List</h1>
-<table class="table">
+<div class='table-container'>
+<table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col">Algorithm</th>
-      <th scope="col">Community</th>
+      <th class ="col-title" scope="col">Algorithm</th>
+      <th class ="col-title" scope="col">Community</th>
     </tr>
   </thead>
   <tbody>
@@ -14,10 +15,11 @@
     <tr>
       <td> {{match.algorithm }} </td>
       <td>{{match.community}}</td>
-      <td><a href="{% url 'matching_details' match.pk%}" ><span> See Details </span></a></td>
+      <td><a class="btn btn-default" href="{% url 'matching_details' match.pk%}" ><span> See Details </span></a></td>
       <td><a class="btn btn-default" href="{% url 'matching_delete' match.pk%}" >Delete Matching</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

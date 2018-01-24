@@ -147,7 +147,9 @@ def can_add_members(community, group):
     else:
         return False
 
+# def blue_details(request, community_id, blue_id):
 def blue_details(request, pk):
+    # blue = get_object_or_404(Blue, pk=blue_id, community = community_id)
     blue = get_object_or_404(Blue, pk=pk)
     community = blue.community
     reds = Red.objects.filter(community = community)
@@ -166,15 +168,21 @@ def blue_details(request, pk):
     rankings = Ranking.objects.filter(blue = blue)
     # puede ser mas de un pairing, uno por algoritmo
     pairs_algorithm = {}
-    blue_pairs = Pairing.objects.filter(pk = blue.pk)
+    blue_pairs = Pairing.objects.filter(blue_id = blue.pk)
+
+
     if blue_pairs:
         for pair in blue_pairs:
             red_algorithm = {}
             red_pair = pair.red
             red_name = red_pair.name
+            ranking_for_them = Ranking.objects.filter(blue = blue, red = red_pair)[0]
+            ranking_to_red = ranking_for_them.blue_to_red_score
+
             matching = pair.matching
             algorithm = matching.algorithm
             red_algorithm['red_name'] = red_name
+            red_algorithm['ranking_to_red'] = ranking_to_red
             red_algorithm['algorithm'] = algorithm
             pairs_algorithm[pair.pk] = red_algorithm
 
@@ -203,7 +211,7 @@ def blue_details(request, pk):
     #     print('this is the pairs_algorithm')
     #     esto = pairs_algorithm
     #     print(esto)
-    return render(request, 'match/blue_details.html', {'blue': blue,  'blue_id': pk, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm, 'community': community })
+    return render(request, 'match/blue_details.html', {'blue': blue, 'red_scores' : red_scores,  'pairs_algorithm': pairs_algorithm, 'community': community })
 
 
 def red_details(request, pk):
@@ -230,15 +238,18 @@ def red_details(request, pk):
 
     # in case there is  a pair, it gives the pair and the algoritm.
     pairs_algorithm = {}
-    red_pairs = Pairing.objects.filter(pk = red.pk)
+    red_pairs = Pairing.objects.filter(red_id = red.pk)
     if red_pairs:
         for pair in red_pairs:
             blue_algorithm = {}
             blue_pair = pair.blue
             blue_name = blue_pair.name
+            ranking_for_them = Ranking.objects.filter(red = red, blue = blue_pair)[0]
+            ranking_to_blue = ranking_for_them.red_to_blue_score
             matching = pair.matching
             algorithm = matching.algorithm
             blue_algorithm['blue_name'] = blue_name
+            blue_algorithm['ranking_to_blue'] = ranking_to_blue
             blue_algorithm['algorithm'] = algorithm
             pairs_algorithm[pair.pk] = blue_algorithm
     #
@@ -565,10 +576,15 @@ def make_graphs(request, pk):
         pairs = Pairing.objects.filter(matching = match)
         algorithm = match.algorithm
         one_match['label'] = algorithm
+        one_match['pointRadius'] = 6
+        one_match['pointBorderWidth']= 6
+        # one_match['pointBorderColor' ]=  "rgba(200,0,0,0.6)"
         if algorithm == 'Shapley Gale Blue Proposes':
             one_match['backgroundColor'] = "rgba(0,0,200,0.2)"
+            one_match['pointBorderColor'] = "rgba(0,0,200,0.15)"
         else:
             one_match['backgroundColor'] = "rgba(200,0,0,0.2)"
+            one_match['pointBorderColor'] = "rgba(200,0,0,0.15)"
 
         # Get the happiness level in a hash
         scores = {}
@@ -585,6 +601,7 @@ def make_graphs(request, pk):
             scores[blue.name] = blue_happiness
             scores[red.name] = red_happiness
 
+
         # create empty list
         data = [None] * (int(community[0].number_couples)* 2)
 
@@ -595,6 +612,7 @@ def make_graphs(request, pk):
 
         one_match['data'] = data
         datasets.append(one_match)
+
 
 
     # for match in matchings:

@@ -20,12 +20,16 @@ h1 {
     color: #e56004;
 }
 
-.panel-body {
+/*.panel-body {
   background-color: #f9deb8;
-}
+}*/
 
 body {
   font-family: Roboto Slab
+}
+
+.canvas-container {
+  padding-top: 100px;
 }
 
 
@@ -33,4 +37,14 @@ body {
 
 #title-home {
   text-align: center;
+}
+
+.col-title {
+  font-weight: bold;
+  font-size: 1.2em;
+  /*color: #e56004;*/
+}
+
+.table-container {
+  padding-top: 10px;
 }
