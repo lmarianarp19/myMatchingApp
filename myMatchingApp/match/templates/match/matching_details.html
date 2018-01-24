@@ -2,27 +2,33 @@
 
 {% block content %}
 <h1> Matching Details </h1>
-<h3> Community: </h1> {{matching.community }}
-  <h3> Algorithm: </h3> {{matching.algorithm}}
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Blue</th>
-        <th scope="col">Red</th>
-        <th scope="col">Blue Hapiness</th>
-        <th scope="col">Red Hapiness</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for couple in pairs_array %}
-      <tr>
-        {% for couple in couple %}
-        <td>{{couple}}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <a class="btn btn-default" href="{% url 'matching_delete' matching.pk%}" >Delete Matching</a>
-  <a class="btn btn-default" href="{% url 'community_details' community.pk%}" >See Community Details</a>
-  {% endblock %}
+<p class="matching-details"><b> Community: </b> {{matching.community }}</p>
+<p class="matching-details"><b> Algorithm: </b> {{matching.algorithm}}</p>
+<div class="row" >
+  <div class="col-md-8 ">
+    <div class='table-container'>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class ="col-title" scope="col">Blue</th>
+            <th class ="col-title" scope="col">Red</th>
+            <th class ="col-title" scope="col">Blue Hapiness</th>
+            <th class ="col-title" scope="col">Red Hapiness</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for couple in pairs_array %}
+          <tr>
+            {% for couple in couple %}
+            <td>{{couple}}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a class="btn btn-default" href="{% url 'matching_delete' matching.pk%}" >Delete Matching</a>
+      <a class="btn btn-default" href="{% url 'community_details' community.pk%}" >See Community Details</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -576,7 +576,7 @@ def make_graphs(request, pk):
         pairs = Pairing.objects.filter(matching = match)
         algorithm = match.algorithm
         one_match['label'] = algorithm
-        one_match['pointRadius'] = 6
+        one_match['pointRadius'] = 4
         one_match['pointBorderWidth']= 6
         # one_match['pointBorderColor' ]=  "rgba(200,0,0,0.6)"
         if algorithm == 'Shapley Gale Blue Proposes':

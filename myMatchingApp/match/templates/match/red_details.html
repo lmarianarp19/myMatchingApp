@@ -1,51 +1,65 @@
 {% extends 'match/base.html' %}
 
 {% block content %}
-<h1> Red member "{{red.name }}"</h1>
-<a  href="{% url 'community_details' community.pk %}">
-  Come back to Community Page </a>
+
+<div class="row">
+  <div class="col-md-8"><h1> Red member "{{red.name }}"</h1></div>
+  <div class="col-md-4"><a class="btn btn-default"  href="{% url 'community_details' community.pk %}">
+    Come back to Community Page </a>
+  </div>
+</div>
+<div class="details">
   <h2> Community  "{{red.community}}" </h2>
-  <div class='table-container'>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th class ="col-title" scope="col">Blue Members</th>
-          <th class ="col-title" scope="col">Ranking Given</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for blue in blue_scores %}
-        <tr>
-          <td>{{ blue.blue_name }}</td>
-          <td>{{ blue.rank_given}}</td>
-          <!-- TODO to change this link  -->
-          <td><a class="btn btn-default" href="{% url 'new_ranking_by_red' red.pk blue.blue_pk %}" ><span> Update Ranking </span></a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="row" >
+    <div class="col-md-8 ">
+      <div class='table-container'>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class ="col-title" scope="col">Blue Members</th>
+              <th class ="col-title" scope="col">Ranking Given</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for blue in blue_scores %}
+            <tr>
+              <td>{{ blue.blue_name }}</td>
+              <td>{{ blue.rank_given}}</td>
+              <!-- TODO to change this link  -->
+              <td><a class="btn btn-default" href="{% url 'new_ranking_by_red' red.pk blue.blue_pk %}" ><span> Update Ranking </span></a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <h2> Pairing</h2>
-  <div class='table-container'>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th class ="col-title" scope="col">Pair</th>
-          <th class ="col-title" scope="col">Ranking Given</th>
-          <th class ="col-title" scope="col"> Algorithm </th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for key, value in pairs_algorithm.items %}
-        <tr>
-          <td>{{ value.blue_name }}</td>
-          <td>{{ value.ranking_to_blue }}</td>
-          <td>{{ value.algorithm }}</td>
+  <div class="row" >
+    <div class="col-md-8 ">
+      <div class='table-container'>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class ="col-title" scope="col">Pair</th>
+              <th class ="col-title" scope="col">Ranking Given</th>
+              <th class ="col-title" scope="col"> Algorithm </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, value in pairs_algorithm.items %}
+            <tr>
+              <td>{{ value.blue_name }}</td>
+              <td>{{ value.ranking_to_blue }}</td>
+              <td>{{ value.algorithm }}</td>
 
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
+</div>
 
-  {% endblock %}
+{% endblock %}

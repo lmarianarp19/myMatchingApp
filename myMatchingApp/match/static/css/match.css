@@ -37,6 +37,7 @@ body {
 
 #title-home {
   text-align: center;
+  padding: 20px;
 }
 
 .col-title {
@@ -47,4 +48,19 @@ body {
 
 .table-container {
   padding-top: 10px;
+}
+
+.title-form {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.details {
+  padding-left: 40px;
+  padding-top: 20px;
+}
+
+.matching-details {
+  font-size: 1.2em;
+  padding: 5px;
 }
