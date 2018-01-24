@@ -127,6 +127,10 @@ def community_details(request, pk):
     add_red = can_add_members(community, reds)
     add_blue = can_add_members(community, blues)
 
+
+    can_match = False
+
+    total_given_ranks = 0
     red_given_rankings = []
 
     for person in reds:
@@ -135,6 +139,7 @@ def community_details(request, pk):
         ranking_involving_person = Ranking.objects.filter(red=person)
         for rank in ranking_involving_person:
             if rank.red_to_blue_score:
+                total_given_ranks += 1
                 given_ranks  += 1
         details_rankings_given['name'] = person.name
         details_rankings_given['ranks_missing'] = int(community.number_couples)-given_ranks
@@ -149,13 +154,23 @@ def community_details(request, pk):
         ranking_involving_person = Ranking.objects.filter(blue=person)
         for rank in ranking_involving_person:
             if rank.blue_to_red_score:
+                total_given_ranks += 1
                 given_ranks  += 1
         details_rankings_given['name'] = person.name
         details_rankings_given['ranks_missing'] = int(community.number_couples)-given_ranks
         details_rankings_given['pk'] = person.pk
         blue_given_rankings.append(details_rankings_given)
 
-    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues, 'add_red': add_red, 'add_blue': add_blue, 'red_given_rankings': red_given_rankings, 'blue_given_rankings': blue_given_rankings})
+    # check if any rank is missing
+
+    if total_given_ranks == int(community.number_couples) * 2:
+        can_match = True
+
+    print('total given ranks')
+    print(total_given_ranks)
+    print(can_match)
+
+    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues, 'add_red': add_red, 'add_blue': add_blue, 'red_given_rankings': red_given_rankings, 'blue_given_rankings': blue_given_rankings, 'can_match': can_match})
 
 
 def ranks_given(singular, plural, other):

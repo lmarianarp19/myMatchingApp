@@ -1,10 +1,10 @@
 {% extends 'match/base.html' %}
 
 {% block content %}
-  <h1> {{community.name }}</h1>
+<h1> {{community.name }}</h1>
 
 
-  <div class="row">
+<div class="row">
   <div class="col-md-6">
     <h2> Reds </h2>
     <table class="table table-hover">
@@ -20,67 +20,66 @@
         <tr>
           <td>{{red.name}}</td>
           <td>{{red.ranks_missing}}
-          <td> <a href="{% url 'red_details' red.pk%}" class="btn btn-default" ><span>See Details</span></a></td>
-        </tr>
-        {% endfor %}
-        {% if add_red %}
-        <tr><td>  <a href="{% url 'new_red' %}" class="btn btn-default"> Add Red Member </a></td></tr>
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
-
-
-    <div class="row">
-    <div class="col-md-6">
-      <h2> Blues </h2>
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Ranks missing</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for blue in blue_given_rankings %}
-          <tr>
-            <td>{{blue.name}}</td>
-            <td>{{blue.ranks_missing}}</td>
-            <td> <a href="{% url 'blue_details' blue.pk %}" class="btn btn-default" ><span>See Details</span></a></td>
+            <td> <a href="{% url 'red_details' red.pk%}" class="btn btn-default" ><span>See Details</span></a></td>
           </tr>
           {% endfor %}
-          {% if add_blue %}
-          <tr> <td> <a href="{% url 'new_blue' %}" class="btn btn-default"> Add Blue Member </a></td></tr>
+          {% if add_red %}
+          <tr><td>  <a href="{% url 'new_red' %}" class="btn btn-default"> Add Red Member </a></td></tr>
           {% endif %}
-
         </tbody>
       </table>
     </div>
-    {% if not add_red %}
-      {% if not add_blue %}
-        <a href="{% url 'new_matching' %}" class="btn btn-default"> Create Match </a>
+
+
+    <div class="row">
+      <div class="col-md-6">
+        <h2> Blues </h2>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Ranks missing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for blue in blue_given_rankings %}
+            <tr>
+              <td>{{blue.name}}</td>
+              <td>{{blue.ranks_missing}}</td>
+              <td> <a href="{% url 'blue_details' blue.pk %}" class="btn btn-default" ><span>See Details</span></a></td>
+            </tr>
+            {% endfor %}
+            {% if add_blue %}
+            <tr> <td> <a href="{% url 'new_blue' %}" class="btn btn-default"> Add Blue Member </a></td></tr>
+            {% endif %}
+
+          </tbody>
+        </table>
+      </div>
+      {%if can_match %}
+      <a href="{% url 'new_matching' %}" class="btn btn-default"> Create Match </a>
       {% endif %}
-    {%endif%}
-    {% endblock %}
 
-  <!-- <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Red Member</th>
-        <th scope="col">Blue Member</th>
-      </tr>
-    </thead>
-    <tbody>
+      {% endblock %}
 
-      {% for red in reds %}
+      <!-- <table class="table">
+      <thead>
       <tr>
-                <td>{{red}} </td>
-      </tr>
-      {% endfor %}
-      {% for blue in blues %}
-      <tr>
-        <td>{{blue}}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table> -->
+      <th scope="col">Red Member</th>
+      <th scope="col">Blue Member</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for red in reds %}
+  <tr>
+  <td>{{red}} </td>
+</tr>
+{% endfor %}
+{% for blue in blues %}
+<tr>
+<td>{{blue}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table> -->
