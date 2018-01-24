@@ -11,12 +11,15 @@
       <thead>
         <tr>
           <th scope="col">Name</th>
+          <th scope="col">Ranks missing</th>
+
         </tr>
       </thead>
       <tbody>
-        {% for red in reds %}
+        {% for red in red_given_rankings %}
         <tr>
           <td>{{red.name}}</td>
+          <td>{{red.ranks_missing}}
           <td> <a href="{% url 'red_details' red.pk%}" class="btn btn-default" ><span>See Details</span></a></td>
         </tr>
         {% endfor %}
@@ -35,13 +38,14 @@
         <thead>
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Ranks missing</th>
           </tr>
         </thead>
         <tbody>
-          {% for blue in blues %}
+          {% for blue in blue_given_rankings %}
           <tr>
             <td>{{blue.name}}</td>
-            
+            <td>{{blue.ranks_missing}}</td>
             <td> <a href="{% url 'blue_details' blue.pk %}" class="btn btn-default" ><span>See Details</span></a></td>
           </tr>
           {% endfor %}

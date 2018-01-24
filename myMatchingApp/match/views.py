@@ -21,19 +21,6 @@ def community_list(request):
     communities = Community.objects.all()
     return render(request, 'match/community_list.html', {'communities': communities})
 
-# def new_community(request):
-#     if request.method == "POST":
-#         form = CommunityForm(request.POST)
-#         if form.is_valid():
-#             community = form.save(commit=False)
-#             community.save()
-#             # return redirect('new_woman', id=community.id)
-#             return redirect('home')
-#             # return redirect('community_list')
-#     else:
-#         form = CommunityForm()
-#     return render(request, 'match/new_community.html', {'form': form})
-
 def new_red(request):
     if request.method == "POST":
         form = RedForm(request.POST)
@@ -139,7 +126,50 @@ def community_details(request, pk):
     blues = Blue.objects.filter(community = community)
     add_red = can_add_members(community, reds)
     add_blue = can_add_members(community, blues)
-    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues, 'add_red': add_red, 'add_blue': add_blue})
+
+    red_given_rankings = []
+
+    for person in reds:
+        details_rankings_given = {}
+        given_ranks = 0
+        ranking_involving_person = Ranking.objects.filter(red=person)
+        for rank in ranking_involving_person:
+            if rank.red_to_blue_score:
+                given_ranks  += 1
+        details_rankings_given['name'] = person.name
+        details_rankings_given['ranks_missing'] = int(community.number_couples)-given_ranks
+        details_rankings_given['pk'] = person.pk
+        red_given_rankings.append(details_rankings_given)
+
+    blue_given_rankings = []
+
+    for person in blues:
+        details_rankings_given ={}
+        given_ranks = 0
+        ranking_involving_person = Ranking.objects.filter(blue=person)
+        for rank in ranking_involving_person:
+            if rank.blue_to_red_score:
+                given_ranks  += 1
+        details_rankings_given['name'] = person.name
+        details_rankings_given['ranks_missing'] = int(community.number_couples)-given_ranks
+        details_rankings_given['pk'] = person.pk
+        blue_given_rankings.append(details_rankings_given)
+
+    return render(request, 'match/community_detail.html', {'community': community, 'reds': reds, 'blues': blues, 'add_red': add_red, 'add_blue': add_blue, 'red_given_rankings': red_given_rankings, 'blue_given_rankings': blue_given_rankings})
+
+
+def ranks_given(singular, plural, other):
+    name_rankings_given = {}
+    for person in plural:
+        given_ranks = 0
+        ranking_involving_person = Ranking.objects.filter(singular=person)
+        for rank in ranking_involve_person:
+            if rank.singular_to_other_score:
+                given_ranks  += 1
+                print('blue to red_scores')
+                print( rank.singular_to_other_score)
+        name_rankings_given[singular.name] = given_ranks
+    return name_rankings_given
 
 def can_add_members(community, group):
     if len(group) < int(community.number_couples):
